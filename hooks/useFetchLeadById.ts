@@ -45,12 +45,12 @@ interface ApiResponse {
 /**
  * Custom hook to fetch lead data from the Odoo API
  * 
- * @param id - The lead ID to fetch
+ * @param idOrJobNo - The lead ID or job number to fetch
  * @param baseUrl - Base URL for the API (defaults to process.env.NEXT_PUBLIC_API_URL or 'http://localhost:3000')
  * @returns Object containing lead data, loading state, and error
  */
 const useFetchLeadById = (
-  id: string | number | null | undefined,
+  idOrJobNo: string | number | null | undefined,
   baseUrl: string = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
 ) => {
   const [lead, setLead] = useState<Lead | null>(null);
@@ -64,23 +64,40 @@ const useFetchLeadById = (
     setLead(null);
 
     // Skip API call if ID is missing or invalid
-    if (!id) {
+    if (!idOrJobNo) {
       setIsLoading(false);
       return;
     }
 
     const fetchLead = async () => {
       try {
-        // Construct the URL
-        const url = `${baseUrl}/api/crm.lead/${id}`;
-
-        const response = await axios.get<ApiResponse>(url);
+        // Check if the identifier is a job number (starts with N) or a lead ID
+        const isJobNumber = typeof idOrJobNo === 'string' && idOrJobNo.startsWith('N');
         
-        // Check for successful response
-        if (response.data && response.data.success) {
-          setLead(response.data.data);
+        let url: string;
+        if (isJobNumber) {
+          // Fetch by job number using a search
+          url = `${baseUrl}/api/crm.lead/search_read`;
+          const response = await axios.post(url, {
+            domain: [['lead_properties.value', '=', idOrJobNo]],
+            fields: [] // Empty array means fetch all fields
+          });
+          
+          if (response.data && response.data.success && response.data.data.length > 0) {
+            setLead(response.data.data[0]);
+          } else {
+            setError(new Error(`No lead found with job number: ${idOrJobNo}`));
+          }
         } else {
-          setError(new Error('Failed to fetch lead data'));
+          // Fetch by ID
+          url = `${baseUrl}/api/crm.lead/${idOrJobNo}`;
+          const response = await axios.get<ApiResponse>(url);
+          
+          if (response.data && response.data.success) {
+            setLead(response.data.data);
+          } else {
+            setError(new Error('Failed to fetch lead data'));
+          }
         }
       } catch (err) {
         if (err instanceof Error) {
@@ -95,7 +112,7 @@ const useFetchLeadById = (
     };
 
     fetchLead();
-  }, [id, baseUrl]); // Re-fetch when ID or URL changes
+  }, [idOrJobNo, baseUrl]); // Re-fetch when ID or URL changes
 
   return { lead, isLoading, error };
 };

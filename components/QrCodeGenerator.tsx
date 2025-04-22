@@ -8,23 +8,23 @@ import { usePathname, useSearchParams } from 'next/navigation';
 
 import { QRCodeSVG } from 'qrcode.react';
 
-const QRCodeGenerator = ({ baseUrl = "" }) => {
+const QRCodeGenerator = ({ id = "" }) => {
     const pathname = usePathname();
     const searchParams = useSearchParams();
     const [fullUrl, setFullUrl] = useState("");
 
     useEffect(() => {
         // Get the base URL (we can't access window during SSR)
-        const host = baseUrl || window.location.origin;
+        // const host = baseUrl || window.location.origin;
 
-        // Construct the full URL
-        const queryString = searchParams ? .toString() ?
-            `?${searchParams.toString()}` :
-            '';
+        // // Construct the full URL
+        // const queryString = searchParams ? .toString() ?
+        //     `?${searchParams.toString()}` :
+        //     '';
 
-        const currentUrl = `https://print.erpsamuiaksorn.com/N1234`;
+        const currentUrl = `https://print.erpsamuiaksorn.com/?id=${id}`;
         setFullUrl(currentUrl);
-    }, [pathname, searchParams, baseUrl]);
+    }, [pathname, searchParams]);
 
     return (
         <div className="flex flex-col items-center  border rounded-lg shadow-sm">

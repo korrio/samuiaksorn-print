@@ -7,10 +7,21 @@ import { useRef } from 'react'
 import useFetchLeadById from "@/hooks/useFetchLeadById";
 import QrCodeGenerator from '@/components/QrCodeGenerator';
 
+import { useSearchParams } from 'next/navigation';
+
 export default function PrintJobPage() {
-  const params = useParams();
-  const id = "2540";
-  const printRef = useRef<HTMLDivElement>(null);
+	const printRef = useRef<HTMLDivElement>(null);
+  const searchParams = useSearchParams();
+  
+  // Get optional query parameters
+  const id = searchParams.get('id');
+  const jobNo = searchParams.get('job');
+  const view = searchParams.get('view'); // For example, if you want to change the view mode
+
+  console.log("job",jobNo)
+  
+  // Choose which identifier to use - either path param or query param
+  const identifier = jobNo || id;
   
   const { lead, isLoading, error } = useFetchLeadById(id);
 
@@ -167,7 +178,7 @@ export default function PrintJobPage() {
                 <span>ราคา {lead.expected_revenue.toFixed(2)} บาท</span>
               </div>
             </div>
-            <QrCodeGenerator />
+            <QrCodeGenerator id={id} />
           </div>
 
           {/* Main content table */}
@@ -277,3 +288,4 @@ export default function PrintJobPage() {
       </div>
     </div>
   );
+}
