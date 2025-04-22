@@ -46,12 +46,12 @@ interface ApiResponse {
  * Custom hook to fetch lead data from the Odoo API
  * 
  * @param idOrJobNo - The lead ID or job number to fetch
- * @param baseUrl - Base URL for the API (defaults to process.env.NEXT_PUBLIC_API_URL or 'http://localhost:3000')
+ * @param baseUrl - Base URL for the API (defaults to process.env.NEXT_PUBLIC_API_URL or 'https://api.erpsamuiaksorn.com')
  * @returns Object containing lead data, loading state, and error
  */
 const useFetchLeadById = (
   idOrJobNo: string | number | null | undefined,
-  baseUrl: string = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+  baseUrl: string = process.env.NEXT_PUBLIC_API_URL || 'https://api.erpsamuiaksorn.com'
 ) => {
   const [lead, setLead] = useState<Lead | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
