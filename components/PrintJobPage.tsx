@@ -175,7 +175,7 @@ export default function PrintJobPage() {
                 <span>ราคา {lead.expected_revenue.toFixed(2)} บาท</span>
               </div>
             </div>
-            <QrCodeGenerator id={id} />
+            <QrCodeGenerator id={id || undefined} />
           </div>
 
           {/* Main content table */}
