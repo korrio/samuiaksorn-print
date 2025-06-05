@@ -13,7 +13,7 @@ export default function MobilePrintJobPage() {
   const searchParams = useSearchParams();
   
   const id = searchParams.get('id');
-  const jobNo = searchParams.get('job');
+  // const jobNo = searchParams.get('job');
   
   const { lead, isLoading, error } = useFetchLeadById(id);
 
