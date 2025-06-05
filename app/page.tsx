@@ -1,13 +1,21 @@
 import { Suspense } from 'react';
 import PrintJobPage from '@/components/PrintJobPage';
-import Loading from '@/components/Loading'; // Create a loading component
+import PrintJobPageNew from '@/components/PrintJobPageNew'; // Your mobile-optimized component
+import Loading from '@/components/Loading';
 
 export default function Page() {
-  
   return (
     <main>
       <Suspense fallback={<Loading />}>
-        <PrintJobPage />
+        {/* Desktop Version - Hidden on mobile */}
+        <div className="hidden md:block">
+          <PrintJobPage />
+        </div>
+        
+        {/* Mobile Version - Hidden on desktop */}
+        <div className="block md:hidden">
+          <PrintJobPageNew />
+        </div>
       </Suspense>
     </main>
   );
