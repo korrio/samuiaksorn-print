@@ -1,0 +1,660 @@
+{
+"success": true,
+"data": {
+"kpis": {
+"total_opportunities": 945,
+"total_revenue": 2255149,
+"won_count": 364,
+"won_revenue": 904997,
+"conversion_rate": 38.52,
+"opportunity_trend": -30.67,
+"revenue_trend": -43.54,
+"won_trend": -49.16,
+"conversion_trend": -14.01
+},
+"funnel_data": [
+{
+"stage": "ประสานงาน",
+"count": 22,
+"revenue": 18010,
+"color": "#6c757d"
+},
+{
+"stage": "ตัดก่อนพิมพ์",
+"count": 0,
+"revenue": 0,
+"color": "#6c757d"
+},
+{
+"stage": "เสนอราคา",
+"count": 7,
+"revenue": 8000,
+"color": "#6c757d"
+},
+{
+"stage": "ออกแบบ",
+"count": 25,
+"revenue": 11352,
+"color": "#6c757d"
+},
+{
+"stage": "กระบวนการพิมพ์",
+"count": 23,
+"revenue": 56150,
+"color": "#6c757d"
+},
+{
+"stage": "หลังพิมพ์",
+"count": 2,
+"revenue": 6300,
+"color": "#6c757d"
+},
+{
+"stage": "งานเสร็จ",
+"count": 2,
+"revenue": 450,
+"color": "#6c757d"
+},
+{
+"stage": "การเงิน",
+"count": 364,
+"revenue": 904997,
+"color": "#6c757d"
+},
+{
+"stage": "งานเก่า",
+"count": 500,
+"revenue": 1249889.87,
+"color": "#6c757d"
+}
+],
+"monthly_data": {
+"labels": [
+"June",
+"May"
+],
+"data": [
+570,
+375
+],
+"colors": [
+"#0f4c75",
+"#3282b8",
+"#bbe1fa"
+]
+},
+"revenue_data": {
+"labels": [
+"May 2025",
+"June 2025"
+],
+"revenue": [
+866417,
+1388731.87
+],
+"count": [
+375,
+570
+]
+},
+"top_opportunities": [
+{
+"name": "87566 menu",
+"revenue": 50000,
+"salesperson": "Developer",
+"team": "ประสานงาน",
+"stage": "งานเก่า",
+"partner": "เสบียงเล"
+},
+{
+"name": "87501 menu",
+"revenue": 34500,
+"salesperson": "Developer",
+"team": "ประสานงาน",
+"stage": "งานเก่า",
+"partner": "เพ็ญศิริ (ร้านอาหาร)"
+},
+{
+"name": "N93871 Menu Food",
+"revenue": 26500,
+"salesperson": "ตา",
+"team": "ประสานงาน",
+"stage": "การเงิน",
+"partner": "The Palms"
+},
+{
+"name": "88177 ใบส่งสินค้า",
+"revenue": 23000,
+"salesperson": "Developer",
+"team": "ประสานงาน",
+"stage": "งานเก่า",
+"partner": "บ.โกเซ้ง สมุย จำกัด"
+},
+{
+"name": "90732 ใบส่งสินค้า",
+"revenue": 23000,
+"salesperson": "Developer",
+"team": "ประสานงาน",
+"stage": "งานเก่า",
+"partner": "บ.โกเซ้ง สมุย จำกัด"
+},
+{
+"name": "87826 หนังสือรุ่นทีปราษฎร์",
+"revenue": 21500,
+"salesperson": "Developer",
+"team": "ประสานงาน",
+"stage": "งานเก่า",
+"partner": "คุณหนวด"
+},
+{
+"name": "N93533 Key card folder",
+"revenue": 20000,
+"salesperson": "ตา",
+"team": "ประสานงาน",
+"stage": "การเงิน",
+"partner": "Sala Samui Resort & Spa(เฉวง)"
+},
+{
+"name": "90090 Brochure 3 พับ",
+"revenue": 20000,
+"salesperson": "Developer",
+"team": "ประสานงาน",
+"stage": "งานเก่า",
+"partner": "คุณฉัตร"
+},
+{
+"name": "N94397 ที่รองจาน",
+"revenue": 20000,
+"salesperson": "ตา",
+"team": "ประสานงาน",
+"stage": "การเงิน",
+"partner": "Seventy Restaurant"
+},
+{
+"name": "N94421 Brochure หมู่เกาะอ่างทอง",
+"revenue": 20000,
+"salesperson": "สาว",
+"team": "ประสานงาน",
+"stage": "การเงิน",
+"partner": "My Samui Island"
+}
+],
+"country_revenue": [
+{
+"country": "Unknown",
+"revenue": 2255148.87
+}
+],
+"country_count": [
+{
+"country": "Unknown",
+"count": 945
+}
+],
+"activity_data": {
+"labels": [],
+"data": []
+},
+"leads_completed_overtime": {
+"labels": [
+"Mar 20",
+"Mar 27",
+"Apr 03",
+"Apr 10",
+"Apr 17",
+"Apr 24",
+"May 01",
+"May 08",
+"May 15",
+"May 22",
+"May 29",
+"Jun 05"
+],
+"completed_count": [
+0,
+0,
+0,
+0,
+0,
+0,
+25,
+118,
+50,
+72,
+99,
+0
+],
+"completed_revenue": [
+0,
+0,
+0,
+0,
+0,
+0,
+68398,
+211541,
+149424,
+205039,
+270595,
+0
+]
+},
+"stale_opportunities": [
+{
+"id": 1099,
+"name": "N92652 Post card",
+"stage": "ประสานงาน",
+"days_stale": 127,
+"salesperson": "โอ๋",
+"expected_revenue": 0,
+"priority": "high",
+"partner": "Belmond Napasai"
+},
+{
+"id": 1097,
+"name": "Note Pad",
+"stage": "เสนอราคา",
+"days_stale": 127,
+"salesperson": "โอ๋",
+"expected_revenue": 0,
+"priority": "high",
+"partner": "Belmond Napasai"
+},
+{
+"id": 1095,
+"name": "Envelope address",
+"stage": "เสนอราคา",
+"days_stale": 127,
+"salesperson": "โอ๋",
+"expected_revenue": 0,
+"priority": "high",
+"partner": "Belmond Napasai"
+},
+{
+"id": 1175,
+"name": "N92644 envelope",
+"stage": "ประสานงาน",
+"days_stale": 122,
+"salesperson": "ตา",
+"expected_revenue": 0,
+"priority": "high",
+"partner": "The Privilege Hotel"
+},
+{
+"id": 1242,
+"name": "N92810 stk mosquito",
+"stage": "ประสานงาน",
+"days_stale": 121,
+"salesperson": "ตา",
+"expected_revenue": 0,
+"priority": "high",
+"partner": "Sala Samui Resort & Spa(เฉวง)"
+},
+{
+"id": 1240,
+"name": "n92202",
+"stage": "ประสานงาน",
+"days_stale": 121,
+"salesperson": "ตา",
+"expected_revenue": 0,
+"priority": "high",
+"partner": "Unknown"
+},
+{
+"id": 1235,
+"name": "N92805 valentines flyer a5",
+"stage": "ออกแบบ",
+"days_stale": 121,
+"salesperson": "ตา",
+"expected_revenue": 0,
+"priority": "high",
+"partner": "Hyatt"
+},
+{
+"id": 1220,
+"name": "envelope cashier",
+"stage": "ประสานงาน",
+"days_stale": 121,
+"salesperson": "ตา",
+"expected_revenue": 0,
+"priority": "high",
+"partner": "Avani Chaweng"
+},
+{
+"id": 1282,
+"name": "N92827 Forgot something",
+"stage": "ประสานงาน",
+"days_stale": 120,
+"salesperson": "ตา",
+"expected_revenue": 0,
+"priority": "high",
+"partner": "Holiday Inn Koh samui"
+},
+{
+"id": 1300,
+"name": "Menu Dinner",
+"stage": "ประสานงาน",
+"days_stale": 119,
+"salesperson": "สาว",
+"expected_revenue": 0,
+"priority": "high",
+"partner": "Samui Paradise Chaweng"
+},
+{
+"id": 1298,
+"name": "Menu Lunch",
+"stage": "ประสานงาน",
+"days_stale": 119,
+"salesperson": "สาว",
+"expected_revenue": 0,
+"priority": "high",
+"partner": "Samui Paradise Chaweng"
+},
+{
+"id": 1305,
+"name": "ใบเสร็จรับเงิน",
+"stage": "เสนอราคา",
+"days_stale": 118,
+"salesperson": "สาว",
+"expected_revenue": 0,
+"priority": "high",
+"partner": "เทศบาลนครเกาะสมุย"
+},
+{
+"id": 1307,
+"name": "Key Card Folder",
+"stage": "ประสานงาน",
+"days_stale": 108,
+"salesperson": "สาว",
+"expected_revenue": 0,
+"priority": "high",
+"partner": "Centara Life"
+},
+{
+"id": 1131,
+"name": "Laundry/Pressing",
+"stage": "เสนอราคา",
+"days_stale": 107,
+"salesperson": "สาว",
+"expected_revenue": 5400,
+"priority": "high",
+"partner": "Napasai"
+},
+{
+"id": 1646,
+"name": "N03386 ป้ายสติเกอร์ติดพลาสวู๊ด",
+"stage": "ออกแบบ",
+"days_stale": 101,
+"salesperson": "ตา",
+"expected_revenue": 0,
+"priority": "high",
+"partner": "The Sea"
+},
+{
+"id": 1625,
+"name": "N92422 menu",
+"stage": "ประสานงาน",
+"days_stale": 101,
+"salesperson": "ตา",
+"expected_revenue": 0,
+"priority": "high",
+"partner": "ร้าน chern"
+},
+{
+"id": 1613,
+"name": "N93226 menu food  opportunity",
+"stage": "ประสานงาน",
+"days_stale": 101,
+"salesperson": "ตา",
+"expected_revenue": 0,
+"priority": "high",
+"partner": "Fair House Beach Resort"
+},
+{
+"id": 1582,
+"name": "Anantara Bophut's opportunity",
+"stage": "กระบวนการพิมพ์",
+"days_stale": 101,
+"salesperson": "ตา",
+"expected_revenue": 0,
+"priority": "high",
+"partner": "Anantara Bophut"
+},
+{
+"id": 1700,
+"name": "program tour",
+"stage": "ประสานงาน",
+"days_stale": 100,
+"salesperson": "ตา",
+"expected_revenue": 0,
+"priority": "high",
+"partner": "dolphin tour"
+},
+{
+"id": 1685,
+"name": "N93240 environment card don t change tower",
+"stage": "ออกแบบ",
+"days_stale": 100,
+"salesperson": "ตา",
+"expected_revenue": 0,
+"priority": "high",
+"partner": "The Culture"
+}
+],
+"teams": [
+{
+"id": 1,
+"name": "ประสานงาน"
+},
+{
+"id": 12,
+"name": "แพ็ค"
+},
+{
+"id": 11,
+"name": "เรียงบิล"
+},
+{
+"id": 10,
+"name": "งานหลังพิมพ์"
+},
+{
+"id": 9,
+"name": "ช่างพิมพ์ Offset"
+},
+{
+"id": 8,
+"name": "ช่าง Inkjet"
+},
+{
+"id": 7,
+"name": "ตัด"
+},
+{
+"id": 6,
+"name": "บัญชี"
+},
+{
+"id": 5,
+"name": "กราฟฟิค/ช่างปริ้นDigital"
+}
+],
+"stages": [
+{
+"id": 1,
+"name": "ประสานงาน",
+"is_won": false
+},
+{
+"id": 8,
+"name": "ตัดก่อนพิมพ์",
+"is_won": false
+},
+{
+"id": 6,
+"name": "เสนอราคา",
+"is_won": false
+},
+{
+"id": 7,
+"name": "ออกแบบ",
+"is_won": false
+},
+{
+"id": 2,
+"name": "กระบวนการพิมพ์",
+"is_won": false
+},
+{
+"id": 3,
+"name": "หลังพิมพ์",
+"is_won": false
+},
+{
+"id": 4,
+"name": "งานเสร็จ",
+"is_won": false
+},
+{
+"id": 5,
+"name": "การเงิน",
+"is_won": true
+},
+{
+"id": 9,
+"name": "งานเก่า",
+"is_won": false
+}
+],
+"users": [
+{
+"id": 8,
+"name": "Admin"
+},
+{
+"id": 2,
+"name": "Developer"
+},
+{
+"id": 6,
+"name": "demo"
+},
+{
+"id": 93,
+"name": "thanaanon"
+},
+{
+"id": 104,
+"name": "กร"
+},
+{
+"id": 233,
+"name": "กร2"
+},
+{
+"id": 14,
+"name": "จี๊ด"
+},
+{
+"id": 103,
+"name": "ตา"
+},
+{
+"id": 20,
+"name": "ต้น"
+},
+{
+"id": 18,
+"name": "ต้อม"
+},
+{
+"id": 15,
+"name": "นก"
+},
+{
+"id": 26,
+"name": "นรินทร์"
+},
+{
+"id": 17,
+"name": "นัท"
+},
+{
+"id": 11,
+"name": "ปัด"
+},
+{
+"id": 25,
+"name": "พงศ์"
+},
+{
+"id": 105,
+"name": "ฟ้า"
+},
+{
+"id": 27,
+"name": "ภา"
+},
+{
+"id": 19,
+"name": "วิลลี่"
+},
+{
+"id": 22,
+"name": "ศร"
+},
+{
+"id": 102,
+"name": "สาว"
+},
+{
+"id": 31,
+"name": "หมิว"
+},
+{
+"id": 28,
+"name": "อิ๋ว"
+},
+{
+"id": 24,
+"name": "เดียร์"
+},
+{
+"id": 13,
+"name": "เป๊ก"
+},
+{
+"id": 23,
+"name": "เมฆ"
+},
+{
+"id": 30,
+"name": "เล็ก"
+},
+{
+"id": 29,
+"name": "เอ"
+},
+{
+"id": 32,
+"name": "เอียด"
+},
+{
+"id": 12,
+"name": "แตงโม"
+},
+{
+"id": 21,
+"name": "แอร์"
+},
+{
+"id": 16,
+"name": "โรจน์"
+},
+{
+"id": 10,
+"name": "โอ๋"
+}
+]
+}
+}
