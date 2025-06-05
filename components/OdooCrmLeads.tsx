@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import useOdooApi from '@/hooks/useOdooApi';
 
 const OdooCrmLeads = () => {
@@ -23,7 +23,7 @@ const OdooCrmLeads = () => {
   const [fetchStatus, setFetchStatus] = useState({ loading: false, error: null });
   
   // Function to fetch leads
-  const fetchLeads = async () => {
+  const fetchLeads = useCallback(async () => {
     if (!isAuthenticated) {
       console.log("Not authenticated yet");
       return;
@@ -57,14 +57,14 @@ const OdooCrmLeads = () => {
       console.error("Error fetching leads:", err);
       setFetchStatus({ loading: false, error: err.message });
     }
-  };
+  }, [isAuthenticated, searchRead]);
   
   // Effect to fetch leads when authenticated
   useEffect(() => {
     if (isAuthenticated && session?.uid) {
       fetchLeads();
     }
-  }, [isAuthenticated, session]);
+  }, [isAuthenticated, session, fetchLeads]);
   
   // Debug information
   console.log("Auth state:", { isAuthenticated, session, globalLoading: loading, error });

@@ -1,9 +1,8 @@
-
 import { Suspense } from 'react';
 import PrintJobPage from '@/components/PrintJobPage';
 import Loading from '@/components/Loading'; // Create a loading component
 
-export default function Page({ searchParams }) {
+export default function Page() {
   
   return (
     <main>

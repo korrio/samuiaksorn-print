@@ -3,13 +3,11 @@
 import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
 import Image from "next/image"
-import { useParams } from 'next/navigation'
 
 import useFetchLeadById from "@/hooks/useFetchLeadById";
 import QrCodeGenerator from '@/components/QrCodeGenerator';
 
 export default function PrintJobDetails() {
-  const params = useParams();
   const id = "2396"
 
   const { lead, isLoading, error } = useFetchLeadById(id);
@@ -37,12 +35,6 @@ export default function PrintJobDetails() {
       </Card>
     );
   }
-
-  // Extract lead properties into a more usable format
-  const properties = lead.lead_properties.reduce((acc: Record<string, any>, prop) => {
-    acc[prop.name] = prop.value;
-    return acc;
-  }, {});
 
   // Helper to get property value by name
   const getPropertyValue = (name: string, defaultValue: string = "-") => {

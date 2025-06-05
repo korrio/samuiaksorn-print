@@ -2,11 +2,9 @@
 
 import { Card } from "@/components/ui/card"
 import Image from "next/image"
-import { useParams } from 'next/navigation'
 import { useRef } from 'react'
 import useFetchLeadById from "@/hooks/useFetchLeadById";
 import QrCodeGenerator from '@/components/QrCodeGenerator';
-
 import { useSearchParams } from 'next/navigation';
 
 export default function PrintJobPage() {
@@ -16,12 +14,8 @@ export default function PrintJobPage() {
   // Get optional query parameters
   const id = searchParams.get('id');
   const jobNo = searchParams.get('job');
-  const view = searchParams.get('view'); // For example, if you want to change the view mode
-
-  console.log("job",jobNo)
   
-  // Choose which identifier to use - either path param or query param
-  const identifier = jobNo || id;
+  console.log("job",jobNo)
   
   const { lead, isLoading, error } = useFetchLeadById(id);
 

@@ -24,7 +24,7 @@ const QRCodeGenerator = ({ id = "" }) => {
 
         const currentUrl = `https://print.erpsamuiaksorn.com/?id=${id}`;
         setFullUrl(currentUrl);
-    }, [pathname, searchParams]);
+    }, [pathname, searchParams, id]);
 
     return (
         <div className="flex flex-col items-center  border rounded-lg shadow-sm">
