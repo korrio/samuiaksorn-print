@@ -79,6 +79,9 @@ export default function PrintJobPage() {
                 border: none !important;
               }
               @media print {
+                .button-container {
+                  display: none;
+                }
                 button {
                   display: none;
                 }
@@ -152,7 +155,7 @@ export default function PrintJobPage() {
 
   return (
     <div className="max-w-3xl mx-auto">
-      <div className="mb-4 flex justify-end">
+      <div className="button-container mb-4 flex justify-end">
         <button 
           onClick={handlePrint}
           className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded"
