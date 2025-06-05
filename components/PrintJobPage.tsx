@@ -1,6 +1,9 @@
 "use client"
 
+import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+
 import Image from "next/image"
 import { useRef } from 'react'
 import useFetchLeadById from "@/hooks/useFetchLeadById";
@@ -73,6 +76,9 @@ export default function PrintJobPage() {
                 border: none !important;
               }
               @media print {
+      			.no-print {
+      				display:none;
+      			}
                 .button-container {
                   display: none;
                 }
@@ -219,7 +225,7 @@ export default function PrintJobPage() {
               </tr>
               <tr>
                 <td className="py-1 px-2 text-gray-600 font-medium">กระดาษ/วัสดุ</td>
-                <td className="py-1 px-2">{getPropertyValue("058e3b7a69e5ccc7")}</td>
+                <td className="py-1 px-2">{getPropertyValue("e695494263014454")}</td>
                 <td className="py-1 px-2 text-gray-600 font-medium">สีพิมพ์</td>
                 <td className="py-1 px-2">{getPropertyValue("2bd3d4bb377c3ec4")}</td>
               </tr>
@@ -243,7 +249,7 @@ export default function PrintJobPage() {
               </tr>
               <tr>
                 <td className="py-1 px-2 text-gray-600 font-medium">หลังพิมพ์</td>
-                <td className="py-1 px-2">{getPropertyValue("f589c675cf7ae380")}</td>
+                <td className="py-1 px-2">{getPropertyValue("b480cd0a8f660acb")}</td>
                 <td className="py-1 px-2 text-gray-600 font-medium">จำนวนพิมพ์</td>
                 <td className="py-1 px-2">{getPropertyValue("c1454aabcb10809c")}</td>
               </tr>
@@ -282,6 +288,28 @@ export default function PrintJobPage() {
             </div>
           )}
         </Card>
+      </div>
+      {/* Sticky Footer with Action Buttons */}
+      <div className="no-print fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 flex justify-between gap-4 z-50 shadow-lg">
+        <Button 
+          variant="outline" 
+          className="flex-1 max-w-32 bg-green-50 border-green-200 text-green-700 hover:bg-green-100 hover:border-green-300"
+          onClick={() => {
+            // Handle รับงาน action
+            console.log('รับงาน clicked');
+          }}
+        >
+          รับงาน
+        </Button>
+        <Button 
+          className="flex-1 max-w-32 bg-blue-600 hover:bg-blue-700 text-white"
+          onClick={() => {
+            // Handle ส่งงาน action
+            console.log('ส่งงาน clicked');
+          }}
+        >
+          ส่งงาน
+        </Button>
       </div>
     </div>
   );
