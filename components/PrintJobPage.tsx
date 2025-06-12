@@ -3,24 +3,249 @@
 // import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 
 import Image from "next/image"
-import { useRef } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import useFetchLeadById from "@/hooks/useFetchLeadById";
 import QrCodeGenerator from '@/components/QrCodeGenerator';
 import { useSearchParams } from 'next/navigation';
 
+// Types
+interface Stage {
+  id: number;
+  name: string;
+  sequence: number;
+  is_won: boolean;
+  display_name: string;
+}
+
+interface TeamMember {
+  id: number;
+  name: string;
+  email: string;
+  user_id: [number, string];
+  crm_team_id: [number, string];
+  display_name: string;
+}
+
+interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+}
+
 export default function PrintJobPage() {
-	const printRef = useRef<HTMLDivElement>(null);
+  const printRef = useRef<HTMLDivElement>(null);
   const searchParams = useSearchParams();
   
   // Get optional query parameters
   const id = searchParams.get('id');
   const jobNo = searchParams.get('job');
   
+  // State for modal and stages
+  const [showStageModal, setShowStageModal] = useState(false);
+  const [showTeamModal, setShowTeamModal] = useState(false);
+  const [stages, setStages] = useState<Stage[]>([]);
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
+  const [loadingStages, setLoadingStages] = useState(false);
+  const [loadingTeamMembers, setLoadingTeamMembers] = useState(false);
+  const [updatingStage, setUpdatingStage] = useState(false);
+  const [acceptingJob, setAcceptingJob] = useState(false);
+  
   console.log("job",jobNo)
   
-  const { lead, isLoading, error } = useFetchLeadById(id);
+  const { lead, isLoading, error, refetch } = useFetchLeadById(id);
+
+  // Fetch stages when modal opens
+  useEffect(() => {
+    if (showStageModal && stages.length === 0) {
+      fetchStages();
+    }
+  }, [showStageModal]);
+
+  // Fetch team members when modal opens
+  useEffect(() => {
+    if (showTeamModal && teamMembers.length === 0) {
+      fetchTeamMembers();
+    }
+  }, [showTeamModal]);
+
+  // Fetch available stages
+  const fetchStages = async () => {
+    setLoadingStages(true);
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/crm.stage`);
+      const result: ApiResponse<Stage[]> = await response.json();
+      
+      if (result.success) {
+        // Sort stages by sequence
+        const sortedStages = result.data.sort((a, b) => a.sequence - b.sequence);
+        setStages(sortedStages);
+      } else {
+        console.error('Failed to fetch stages');
+      }
+    } catch (error) {
+      console.error('Error fetching stages:', error);
+    } finally {
+      setLoadingStages(false);
+    }
+  };
+
+  // Fetch team members
+  const fetchTeamMembers = async () => {
+    setLoadingTeamMembers(true);
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/crm.team.member`);
+      const result: ApiResponse<TeamMember[]> = await response.json();
+      
+      if (result.success) {
+        // Group by team and sort by name
+        const sortedMembers = result.data.sort((a, b) => {
+          // First sort by team name, then by member name
+          if (a.crm_team_id[1] !== b.crm_team_id[1]) {
+            return a.crm_team_id[1].localeCompare(b.crm_team_id[1]);
+          }
+          return a.name.localeCompare(b.name);
+        });
+        setTeamMembers(sortedMembers);
+      } else {
+        console.error('Failed to fetch team members');
+      }
+    } catch (error) {
+      console.error('Error fetching team members:', error);
+    } finally {
+      setLoadingTeamMembers(false);
+    }
+  };
+
+  // Stage emoji mapping
+  const getStageEmoji = (stageName) => {
+    const emojiMap = {
+      'ประสานงาน': '📞',
+      'ตัดก่อนพิมพ์': '✂️',
+      'เสนอราคา': '💰',
+      'ออกแบบ': '🎨',
+      'กระบวนการพิมพ์': '🖨️',
+      'หลังพิมพ์': '✨',
+      'งานเสร็จ': '✅',
+      'การเงิน': '💳',
+      'งานเก่า': '📂'
+    };
+    return emojiMap[stageName] || '📋';
+  };
+
+  // Team emoji mapping
+  const getTeamEmoji = (teamName) => {
+    const emojiMap = {
+      'ประสานงาน': '📞',
+      'กราฟฟิค/ช่างปริ้นDigital': '🎨',
+      'บัญชี': '💳',
+      'ตัด': '✂️',
+      'ช่าง Inkjet': '🖨️',
+      'ช่างพิมพ์ Offset': '🖨️',
+      'งานหลังพิมพ์': '✨',
+      'เรียงบิล': '📄',
+      'แพ็ค': '📦'
+    };
+    return emojiMap[teamName] || '👥';
+  };
+
+  // Group team members by team
+  const groupedTeamMembers = teamMembers.reduce((groups, member) => {
+    const teamName = member.crm_team_id[1];
+    if (!groups[teamName]) {
+      groups[teamName] = [];
+    }
+    groups[teamName].push(member);
+    return groups;
+  }, {} as Record<string, TeamMember[]>);
+
+  // Get current stage and possible next stages
+  const getCurrentStageIndex = () => {
+    if (!lead || !stages.length) return -1;
+    return stages.findIndex(stage => stage.id === lead.stage_id[0]);
+  };
+
+  const getAvailableStages = () => {
+    const currentIndex = getCurrentStageIndex();
+    if (currentIndex === -1) return stages;
+    
+    // Return stages that come after the current stage
+    return stages.filter((stage, index) => index > currentIndex);
+  };
+
+  // Update lead stage
+  const updateLeadStage = async (stageId: number, stageName: string) => {
+    if (!lead) return;
+    
+    setUpdatingStage(true);
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/crm.lead/${lead.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          stage_id: stageId
+        })
+      });
+
+      if (response.ok) {
+        // Refresh lead data
+        if (refetch) {
+          await refetch();
+        }
+        setShowStageModal(false);
+        
+        // Show success message (you can replace this with your toast component)
+        alert(`งานถูกส่งไปยัง "${stageName}" เรียบร้อยแล้ว`);
+      } else {
+        throw new Error('Failed to update stage');
+      }
+    } catch (error) {
+      console.error('Error updating stage:', error);
+      alert('เกิดข้อผิดพลาดในการอัปเดตสถานะ');
+    } finally {
+      setUpdatingStage(false);
+    }
+  };
+
+  // Accept job (change owner to current user)
+  const acceptJob = async (userId: number, userName: string) => {
+    if (!lead) return;
+    
+    setAcceptingJob(true);
+    try {
+      // Update lead owner
+      const updateResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/crm.lead/${lead.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_id: userId
+        })
+      });
+
+      if (updateResponse.ok) {
+        // Refresh lead data
+        if (refetch) {
+          await refetch();
+        }
+        setShowTeamModal(false);
+        
+        // Show success message
+        alert(`งานถูกมอบหมายให้ "${userName}" เรียบร้อยแล้ว`);
+      } else {
+        throw new Error('Failed to accept job');
+      }
+    } catch (error) {
+      console.error('Error accepting job:', error);
+      alert('เกิดข้อผิดพลาดในการรับงาน กรุณาลองใหม่อีกครั้ง');
+    } finally {
+      setAcceptingJob(false);
+    }
+  };
 
   const handlePrint = () => {
     if (printRef.current) {
@@ -76,9 +301,9 @@ export default function PrintJobPage() {
                 border: none !important;
               }
               @media print {
-      			.no-print {
-      				display:none;
-      			}
+            .no-print {
+              display:none;
+            }
                 .button-container {
                   display: none;
                 }
@@ -153,6 +378,8 @@ export default function PrintJobPage() {
     );
   }
 
+  const availableStages = getAvailableStages();
+
   return (
     <div className="max-w-3xl mx-auto">
       <div className="button-container mb-4 flex justify-end">
@@ -182,6 +409,15 @@ export default function PrintJobPage() {
               </div>
             </div>
             <QrCodeGenerator id={id || undefined} />
+          </div>
+
+          {/* Current Stage Display */}
+          <div className="mb-3 p-2 bg-blue-50 rounded-lg">
+            <div className="text-sm text-gray-600">สถานะปัจจุบัน:</div>
+            <div className="font-semibold text-blue-700 flex items-center gap-2">
+              <span className="text-lg">{getStageEmoji(lead.stage_id ? lead.stage_id[1] : "")}</span>
+              {lead.stage_id ? lead.stage_id[1] : "ไม่ระบุ"}
+            </div>
           </div>
 
           {/* Main content table */}
@@ -289,26 +525,145 @@ export default function PrintJobPage() {
           )}
         </Card>
       </div>
+
+      {/* Team Member Selection Modal */}
+      <Dialog open={showTeamModal} onOpenChange={setShowTeamModal}>
+        <DialogContent className="sm:max-w-md max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>มอบหมายงานให้ทีมงาน</DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <div className="text-sm text-gray-600">
+              เลือกคนที่จะมอบหมายงานให้:
+            </div>
+            
+            {loadingTeamMembers ? (
+              <div className="text-center py-4">
+                <div className="text-sm text-gray-500">กำลังโหลดทีมงาน...</div>
+              </div>
+            ) : Object.keys(groupedTeamMembers).length > 0 ? (
+              <div className="space-y-3">
+                {Object.entries(groupedTeamMembers).map(([teamName, members]) => (
+                  <div key={teamName} className="space-y-2">
+                    <div className="text-sm font-medium text-gray-700 flex items-center gap-2 border-b pb-1">
+                      <span className="text-base">{getTeamEmoji(teamName)}</span>
+                      {teamName}
+                    </div>
+                    <div className="space-y-1 pl-4">
+                      {members.map((member) => (
+                        <Button
+                          key={member.id}
+                          variant="outline"
+                          className="w-full justify-start h-auto p-3 text-left hover:bg-blue-50 hover:border-blue-200"
+                          onClick={() => acceptJob(member.user_id[0], member.user_id[1])}
+                          disabled={acceptingJob}
+                        >
+                          <div className="flex items-center gap-3 w-full">
+                            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-medium text-sm">
+                              {member.name.charAt(0)}
+                            </div>
+                            <div className="flex-1 text-left">
+                              <div className="font-medium">{member.name}</div>
+                              <div className="text-xs text-gray-500">{member.email}</div>
+                            </div>
+                          </div>
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-4">
+                <div className="text-sm text-gray-500">
+                  ไม่พบข้อมูลทีมงาน
+                </div>
+              </div>
+            )}
+            
+            {acceptingJob && (
+              <div className="text-center py-2">
+                <div className="text-sm text-blue-600">กำลังมอบหมายงาน...</div>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Stage Selection Modal */}
+      <Dialog open={showStageModal} onOpenChange={setShowStageModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>ส่งงานไปยังขั้นตอนถัดไป</DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <div className="text-sm text-gray-600">
+              สถานะปัจจุบัน: <span className="font-medium flex items-center gap-1">
+                <span className="text-base">{getStageEmoji(lead.stage_id ? lead.stage_id[1] : "")}</span>
+                {lead.stage_id ? lead.stage_id[1] : "ไม่ระบุ"}
+              </span>
+            </div>
+            
+            {loadingStages ? (
+              <div className="text-center py-4">
+                <div className="text-sm text-gray-500">กำลังโหลดขั้นตอน...</div>
+              </div>
+            ) : availableStages.length > 0 ? (
+              <div className="space-y-2">
+                <div className="text-sm font-medium text-gray-700">เลือกขั้นตอนถัดไป:</div>
+                {availableStages.map((stage) => (
+                  <Button
+                    key={stage.id}
+                    variant="outline"
+                    className="w-full justify-start h-auto p-3 text-left hover:bg-blue-50 hover:border-blue-200"
+                    onClick={() => updateLeadStage(stage.id, stage.name)}
+                    disabled={updatingStage}
+                  >
+                    <div className="flex items-center gap-3 w-full">
+                      <span className="text-xl">{getStageEmoji(stage.name)}</span>
+                      <div className="flex-1">
+                        <div className="font-medium">{stage.name}</div>
+                        <div className="text-xs text-gray-500">ลำดับที่ {stage.sequence + 1}</div>
+                      </div>
+                    </div>
+                  </Button>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-4">
+                <div className="text-sm text-gray-500">
+                  ไม่มีขั้นตอนถัดไปสำหรับงานนี้
+                </div>
+              </div>
+            )}
+            
+            {updatingStage && (
+              <div className="text-center py-2">
+                <div className="text-sm text-blue-600">กำลังอัปเดตสถานะ...</div>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Sticky Footer with Action Buttons */}
       <div className="no-print fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 flex justify-between gap-4 z-50 shadow-lg">
         <Button 
           variant="outline" 
           className="flex-1 max-w-32 bg-green-50 border-green-200 text-green-700 hover:bg-green-100 hover:border-green-300"
-          onClick={() => {
-            // Handle รับงาน action
-            console.log('รับงาน clicked');
-          }}
+          onClick={() => setShowTeamModal(true)}
+          disabled={!lead}
         >
-          รับงาน
+          🤝 รับงาน
         </Button>
         <Button 
           className="flex-1 max-w-32 bg-blue-600 hover:bg-blue-700 text-white"
-          onClick={() => {
-            // Handle ส่งงาน action
-            console.log('ส่งงาน clicked');
-          }}
+          onClick={() => setShowStageModal(true)}
+          disabled={!lead}
         >
-          ส่งงาน
+          📤 ส่งงานไปยัง
         </Button>
       </div>
     </div>

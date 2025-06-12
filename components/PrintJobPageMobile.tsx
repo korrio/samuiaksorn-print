@@ -8,7 +8,7 @@ import useFetchLeadById from "@/hooks/useFetchLeadById";
 import QrCodeGenerator from '@/components/QrCodeGenerator';
 import { useSearchParams } from 'next/navigation';
 
-export default function MobilePrintJobPage() {
+export default function PrintJobPageMobile() {
   const printRef = useRef<HTMLDivElement>(null);
   const searchParams = useSearchParams();
   
@@ -262,7 +262,7 @@ export default function MobilePrintJobPage() {
               console.log('ส่งงาน clicked');
             }}
           >
-            📤 ส่งงาน
+            📤 ส่งงานไปยัง
           </Button>
         </div>
       </div>
