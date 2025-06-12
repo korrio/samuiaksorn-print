@@ -437,7 +437,7 @@ const getCurrentStageIndex = (): number => {
         </button>
       </div>
       
-      <div ref={printRef}>
+      <div className="mb-20" ref={printRef}>
         <Card className="p-2 relative card">
           {/* Header with logo and QR */}
           <div className="flex justify-between items-start mb-3 print-header">
