@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 
 // Define interfaces for the lead data structure
@@ -47,7 +47,7 @@ interface ApiResponse {
  * 
  * @param idOrJobNo - The lead ID or job number to fetch
  * @param baseUrl - Base URL for the API (defaults to process.env.NEXT_PUBLIC_API_URL or 'https://api.erpsamuiaksorn.com')
- * @returns Object containing lead data, loading state, and error
+ * @returns Object containing lead data, loading state, error, and refetch function
  */
 const useFetchLeadById = (
   idOrJobNo: string | number | null | undefined,
@@ -57,64 +57,88 @@ const useFetchLeadById = (
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);
 
-  useEffect(() => {
-    // Reset states when ID changes
-    setIsLoading(true);
-    setError(null);
-    setLead(null);
-
+  // Create a memoized fetch function that can be called independently
+  const fetchLead = useCallback(async (skipLoadingState = false) => {
     // Skip API call if ID is missing or invalid
     if (!idOrJobNo) {
       setIsLoading(false);
       return;
     }
 
-    const fetchLead = async () => {
-      try {
-        // Check if the identifier is a job number (starts with N) or a lead ID
-        const isJobNumber = typeof idOrJobNo === 'string' && idOrJobNo.startsWith('N');
+    if (!skipLoadingState) {
+      setIsLoading(true);
+    }
+    setError(null);
+
+    try {
+      // Check if the identifier is a job number (starts with N) or a lead ID
+      const isJobNumber = typeof idOrJobNo === 'string' && idOrJobNo.startsWith('N');
+      
+      let url: string;
+      if (isJobNumber) {
+        // Fetch by job number using a search
+        url = `${baseUrl}/api/crm.lead/search_read`;
+        const response = await axios.post(url, {
+          domain: [['lead_properties.value', '=', idOrJobNo]],
+          fields: [] // Empty array means fetch all fields
+        });
         
-        let url: string;
-        if (isJobNumber) {
-          // Fetch by job number using a search
-          url = `${baseUrl}/api/crm.lead/search_read`;
-          const response = await axios.post(url, {
-            domain: [['lead_properties.value', '=', idOrJobNo]],
-            fields: [] // Empty array means fetch all fields
-          });
-          
-          if (response.data && response.data.success && response.data.data.length > 0) {
-            setLead(response.data.data[0]);
-          } else {
-            setError(new Error(`No lead found with job number: ${idOrJobNo}`));
-          }
+        if (response.data && response.data.success && response.data.data.length > 0) {
+          setLead(response.data.data[0]);
         } else {
-          // Fetch by ID
-          url = `${baseUrl}/api/crm.lead/${idOrJobNo}`;
-          const response = await axios.get<ApiResponse>(url);
-          
-          if (response.data && response.data.success) {
-            setLead(response.data.data);
-          } else {
-            setError(new Error('Failed to fetch lead data'));
-          }
+          setError(new Error(`No lead found with job number: ${idOrJobNo}`));
         }
-      } catch (err) {
-        if (err instanceof Error) {
-          setError(err);
+      } else {
+        // Fetch by ID
+        url = `${baseUrl}/api/crm.lead/${idOrJobNo}`;
+        const response = await axios.get<ApiResponse>(url);
+        
+        if (response.data && response.data.success) {
+          setLead(response.data.data);
         } else {
-          setError(new Error('An unknown error occurred'));
+          setError(new Error('Failed to fetch lead data'));
         }
-        console.error('Error fetching lead:', err);
-      } finally {
+      }
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err);
+      } else {
+        setError(new Error('An unknown error occurred'));
+      }
+      console.error('Error fetching lead:', err);
+    } finally {
+      if (!skipLoadingState) {
         setIsLoading(false);
       }
-    };
+    }
+  }, [idOrJobNo, baseUrl]);
 
-    fetchLead();
-  }, [idOrJobNo, baseUrl]); // Re-fetch when ID or URL changes
+  // Refetch function that can be called manually
+  const refetch = useCallback(async () => {
+    await fetchLead(false); // Show loading state
+  }, [fetchLead]);
 
-  return { lead, isLoading, error };
+  // Silent refetch function that doesn't show loading state
+  const silentRefetch = useCallback(async () => {
+    await fetchLead(true); // Skip loading state
+  }, [fetchLead]);
+
+  useEffect(() => {
+    // Reset states when ID changes
+    setIsLoading(true);
+    setError(null);
+    setLead(null);
+
+    fetchLead(false);
+  }, [fetchLead]); // Re-fetch when fetchLead changes (which happens when ID or URL changes)
+
+  return { 
+    lead, 
+    isLoading, 
+    error, 
+    refetch,
+    silentRefetch 
+  };
 };
 
 export default useFetchLeadById;

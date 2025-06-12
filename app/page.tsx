@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import PrintJobPage from '@/components/PrintJobPage';
-import PrintJobPageMobile from '@/components/PrintJobPageMobile'; // Your mobile-optimized component
+// import PrintJobPageMobile from '@/components/PrintJobPageMobile'; // Your mobile-optimized component
 import Loading from '@/components/Loading';
 
 export default function Page() {
@@ -14,7 +14,8 @@ export default function Page() {
         
         {/* Mobile Version - Hidden on desktop */}
         <div className="block md:hidden">
-          <PrintJobPageMobile/>
+          {/*<PrintJobPageMobile/>*/}
+          <PrintJobPage />
         </div>
       </Suspense>
     </main>

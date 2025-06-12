@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 // import { Badge } from "@/components/ui/badge"
@@ -34,8 +36,51 @@ interface ApiResponse<T> {
   data: T;
 }
 
+// interface LeadProperty {
+//   name: string;
+//   value: string;
+//   type: string;
+//   selection?: [string, string][];
+// }
+
+// interface Lead {
+//   id: number;
+//   name: string;
+//   expected_revenue: number;
+//   stage_id: [number, string] | null;
+//   partner_id: [number, string] | null;
+//   user_id: [number, string] | null;
+//   email_from: string | null;
+//   phone: string | null;
+//   date_deadline: string | false;
+//   date_open: string | false;
+//   date_closed: string | false;
+//   tag_ids: string[];
+//   description: string | null;
+//   lead_properties: LeadProperty[];
+// }
+
+interface DialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  children: React.ReactNode;
+}
+
+interface DialogContentProps {
+  children: React.ReactNode;
+  className?: string;
+}
+
+interface DialogHeaderProps {
+  children: React.ReactNode;
+}
+
+interface DialogTitleProps {
+  children: React.ReactNode;
+}
+
 export default function PrintJobPage() {
-  const printRef = useRef<HTMLDivElement>(null);
+	const printRef = useRef<HTMLDivElement>(null);
   const searchParams = useSearchParams();
   
   // Get optional query parameters
@@ -61,14 +106,14 @@ export default function PrintJobPage() {
     if (showStageModal && stages.length === 0) {
       fetchStages();
     }
-  }, [showStageModal]);
+  }, [showStageModal, stages.length]);
 
   // Fetch team members when modal opens
   useEffect(() => {
     if (showTeamModal && teamMembers.length === 0) {
       fetchTeamMembers();
     }
-  }, [showTeamModal]);
+  }, [showTeamModal, teamMembers.length]);
 
   // Fetch available stages
   const fetchStages = async () => {
@@ -119,8 +164,8 @@ export default function PrintJobPage() {
   };
 
   // Stage emoji mapping
-  const getStageEmoji = (stageName) => {
-    const emojiMap = {
+  const getStageEmoji = (stageName: string): string => {
+    const emojiMap: Record<string, string> = {
       'ประสานงาน': '📞',
       'ตัดก่อนพิมพ์': '✂️',
       'เสนอราคา': '💰',
@@ -135,8 +180,8 @@ export default function PrintJobPage() {
   };
 
   // Team emoji mapping
-  const getTeamEmoji = (teamName) => {
-    const emojiMap = {
+  const getTeamEmoji = (teamName: string): string => {
+    const emojiMap: Record<string, string> = {
       'ประสานงาน': '📞',
       'กราฟฟิค/ช่างปริ้นDigital': '🎨',
       'บัญชี': '💳',
@@ -161,12 +206,13 @@ export default function PrintJobPage() {
   }, {} as Record<string, TeamMember[]>);
 
   // Get current stage and possible next stages
-  const getCurrentStageIndex = () => {
-    if (!lead || !stages.length) return -1;
-    return stages.findIndex(stage => stage.id === lead.stage_id[0]);
-  };
+const getCurrentStageIndex = (): number => {
+ if (!lead || !stages.length || !lead.stage_id || !Array.isArray(lead.stage_id)) return -1;
+ const stageId = lead.stage_id as [number, string];
+ return stages.findIndex(stage => stage.id === stageId[0]);
+};
 
-  const getAvailableStages = () => {
+  const getAvailableStages = (): Stage[] => {
     const currentIndex = getCurrentStageIndex();
     if (currentIndex === -1) return stages;
     
@@ -175,7 +221,7 @@ export default function PrintJobPage() {
   };
 
   // Update lead stage
-  const updateLeadStage = async (stageId: number, stageName: string) => {
+  const updateLeadStage = async (stageId: number, stageName: string): Promise<void> => {
     if (!lead) return;
     
     setUpdatingStage(true);
@@ -211,7 +257,7 @@ export default function PrintJobPage() {
   };
 
   // Accept job (change owner to current user)
-  const acceptJob = async (userId: number, userName: string) => {
+  const acceptJob = async (userId: number, userName: string): Promise<void> => {
     if (!lead) return;
     
     setAcceptingJob(true);
@@ -247,7 +293,7 @@ export default function PrintJobPage() {
     }
   };
 
-  const handlePrint = () => {
+  const handlePrint = (): void => {
     if (printRef.current) {
       const printContents = printRef.current.innerHTML;
       const originalContents = document.body.innerHTML;
@@ -301,9 +347,9 @@ export default function PrintJobPage() {
                 border: none !important;
               }
               @media print {
-            .no-print {
-              display:none;
-            }
+      			.no-print {
+      				display:none;
+      			}
                 .button-container {
                   display: none;
                 }
@@ -329,7 +375,7 @@ export default function PrintJobPage() {
   };
 
   // Helper to get property value by name
-  const getPropertyValue = (name: string, defaultValue: string = "-") => {
+  const getPropertyValue = (name: string, defaultValue: string = "-"): string => {
     if (!lead) return defaultValue;
     
     const prop = lead.lead_properties.find(p => p.name === name);
@@ -345,7 +391,7 @@ export default function PrintJobPage() {
   };
 
   // Format date
-  const formatDate = (dateString: string | false) => {
+  const formatDate = (dateString: string | false): string => {
     if (!dateString) return "-";
     return new Date(dateString).toLocaleDateString('en-GB', {
       day: '2-digit',
@@ -426,7 +472,7 @@ export default function PrintJobPage() {
               <tr>
                 <td className="py-1 px-2 text-gray-600 w-1/4 font-medium">ลูกค้า</td>
                 <td className="py-1 px-2 w-1/4">{lead.partner_id ? lead.partner_id[1] : "-"}</td>
-                <td className="py-1 px-2 text-gray-600 w-1/4 font-medium">ประสานงาน</td>
+                <td className="py-1 px-2 text-gray-600 w-1/4 font-medium">ผู้รับงานปัจจุบัน</td>
                 <td className="py-1 px-2 w-1/4">{lead.user_id ? lead.user_id[1] : "-"}</td>
               </tr>
               <tr>
@@ -530,14 +576,10 @@ export default function PrintJobPage() {
       <Dialog open={showTeamModal} onOpenChange={setShowTeamModal}>
         <DialogContent className="sm:max-w-md max-h-[80vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>มอบหมายงานให้ทีมงาน</DialogTitle>
+            <DialogTitle>เลือกผู้รับงาน</DialogTitle>
           </DialogHeader>
           
           <div className="space-y-4">
-            <div className="text-sm text-gray-600">
-              เลือกคนที่จะมอบหมายงานให้:
-            </div>
-            
             {loadingTeamMembers ? (
               <div className="text-center py-4">
                 <div className="text-sm text-gray-500">กำลังโหลดทีมงาน...</div>
