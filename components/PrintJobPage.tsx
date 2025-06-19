@@ -517,7 +517,7 @@ const getCurrentStageIndex = (): number => {
               <div className="no-print p-3 bg-green-50 border border-green-200 rounded-lg">
                 <div className=" flex items-center justify-between">
                   <div>
-                    <div className="text-sm text-green-600 font-medium">ผู้ใช้งานปัจจุบัน:</div>
+                    <div className="text-sm text-green-600 font-medium">ผู้รับงานปัจจุบัน:</div>
                     <div className="font-semibold text-green-800 flex items-center gap-2">
                       <div className="w-6 h-6 bg-green-200 rounded-full flex items-center justify-center text-green-700 text-xs font-bold">
                         {currentUser.name.charAt(0)}
