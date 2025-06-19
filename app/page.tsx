@@ -3,6 +3,7 @@ import { Metadata } from 'next';
 import PrintJobPage from '@/components/PrintJobPage';
 // import PrintJobPageMobile from '@/components/PrintJobPageMobile'; // Your mobile-optimized component
 import Loading from '@/components/Loading';
+import LeadSearch from '@/components/LeadSearch';
 
 type Props = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
@@ -77,7 +78,21 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
   };
 }
 
-export default function Page() {
+export default async function Page({ searchParams }: Props) {
+  const params = await searchParams;
+  const id = params.id as string;
+  const jobNo = params.job as string;
+
+  // If no ID or job parameter, show search component
+  if (!id && !jobNo) {
+    return (
+      <main>
+        <LeadSearch />
+      </main>
+    );
+  }
+
+  // Otherwise show the print job page
   return (
     <main>
       <Suspense fallback={<Loading />}>
