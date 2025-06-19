@@ -261,7 +261,7 @@ const getCurrentStageIndex = (): number => {
     }
   };
 
-  // Accept job (change owner to current user)
+  // Accept job (update lead properties with team member ID)
   const acceptJob = async (userId: number, userName: string, userEmail?: string): Promise<void> => {
     if (!lead) return;
     
@@ -275,27 +275,31 @@ const getCurrentStageIndex = (): number => {
         acceptedAt: new Date().toISOString()
       });
 
-      // Update lead owner
-      // const updateResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/crm.lead/${lead.id}`, {
-      //   method: 'PUT',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify({
-      //     user_id: userId
-      //   })
-      // });
+      // Update lead properties with team member ID
+      const updateResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/crm.lead/${lead.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          lead_properties: [
+            {
+              name: "b1f8d75d35d06603",
+              value: userId
+            }
+          ]
+        })
+      });
 
-      /// if (updateResponse.ok) {
-      if(true) {
+      if (updateResponse.ok) {
         // Refresh lead data
-        // if (refetch) {
-        //   await refetch();
-        // }
+        if (refetch) {
+          await refetch();
+        }
         setShowTeamModal(false);
         
         // Show success message
-        alert(`งานถูกมอบหมายให้ "${userName}" เรียบร้อยแล้ว`);
+        alert(`งานถูกมอบหมายให้ "${userName}" "${userId}" เรียบร้อยแล้ว`);
       } else {
         throw new Error('Failed to accept job');
       }
@@ -657,7 +661,7 @@ const getCurrentStageIndex = (): number => {
                           key={member.id}
                           variant="outline"
                           className="w-full justify-start h-auto p-3 text-left hover:bg-blue-50 hover:border-blue-200"
-                          onClick={() => acceptJob(member.user_id[0], member.user_id[1], member.email)}
+                          onClick={() => acceptJob(member.id, member.user_id[1], member.email)}
                           disabled={acceptingJob}
                         >
                           <div className="flex items-center gap-3 w-full">
