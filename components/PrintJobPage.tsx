@@ -442,12 +442,21 @@ const getCurrentStageIndex = (): number => {
 
   return (
     <div className="max-w-3xl mx-auto">
-      <div className="button-container mb-4 flex justify-end">
+      {/* Top Header with Company Logo */}
+      <div className="no-print mb-4 flex justify-between items-center">
+        <Image
+          id="main-logo"
+          src="https://erpsamuiaksorn.com/web/binary/company_logo"
+          alt="Company Logo"
+          width={120}
+          height={28}
+          className="h-7 w-auto hidden print:block"
+        />
         <button 
           onClick={handlePrint}
           className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded"
         >
-          พิมพ์ใบสั่งงาน
+          🖨️ พิมพ์ใบสั่งงาน
         </button>
       </div>
       
@@ -475,8 +484,8 @@ const getCurrentStageIndex = (): number => {
           <div className="mb-3 grid grid-cols-1 md:grid-cols-2 gap-3">
             {/* Current User Display */}
             {isUserAccepted && currentUser && (
-              <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
-                <div className="no-print flex items-center justify-between">
+              <div className="no-print p-3 bg-green-50 border border-green-200 rounded-lg">
+                <div className=" flex items-center justify-between">
                   <div>
                     <div className="text-sm text-green-600 font-medium">ผู้ใช้งานปัจจุบัน:</div>
                     <div className="font-semibold text-green-800 flex items-center gap-2">
@@ -502,7 +511,7 @@ const getCurrentStageIndex = (): number => {
             )}
             
             {/* Current Stage Display */}
-            <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="no-print p-3 bg-blue-50 border border-blue-200 rounded-lg">
               <div className="no-print">
                 <div className="text-sm text-blue-600 font-medium">สถานะงานปัจจุบัน:</div>
                 <div className="font-semibold text-blue-800 flex items-center gap-2">
