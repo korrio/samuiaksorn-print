@@ -12,7 +12,7 @@ import { useRef, useState, useEffect } from 'react'
 import useFetchLeadById from "@/hooks/useFetchLeadById";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import QrCodeGenerator from '@/components/QrCodeGenerator';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Swal from 'sweetalert2';
 
 // Types
@@ -131,6 +131,7 @@ interface DialogTitleProps {
 export default function PrintJobPage() {
 	const printRef = useRef<HTMLDivElement>(null);
   const searchParams = useSearchParams();
+  const router = useRouter();
   
   // Get optional query parameters
   const id = searchParams.get('id');
@@ -229,67 +230,67 @@ export default function PrintJobPage() {
     
     setLoadingTimeline(true);
     try {
-      // const response = await fetch(`https://erpsamuiaksorn.com/api/crm/lead/${lead.id}/timeline`);
-      // const result: TimelineResponse = await response.json();
+      const response = await fetch(`https://erpsamuiaksorn.com/api/crm/lead/${lead.id}/timeline`);
+      const result: TimelineResponse = await response.json();
 
-      const result: TimelineResponse = {
-"error": false,
-"message": "Timeline retrieved for lead N2385 ตรายางหมึกใน",
-"timestamp": "2025-06-19T16:00:49",
-"data": {
-"lead_info": {
-"id": 3212,
-"name": "N2385 ตรายางหมึกใน",
-"partner_name": "Happy Doggo",
-"email_from": false,
-"phone": false,
-"user_id": "กร",
-"team_id": "ประสานงาน",
-"create_date": "2025-05-27 08:18:42.901240",
-"expected_revenue": 600
-},
-"current_status": {
-"current_stage": "เสนอราคา",
-"current_stage_duration_hours": 1.1905555555555556,
-"current_stage_days": 0,
-"is_overdue": false,
-"last_activity_date": "2025-06-19 14:44:26",
-"days_since_last_activity": 0
-},
-"timeline": [
-{
-"date": "2025-06-19 14:44:26",
-"stage_from": "เสนอราคา",
-"stage_to": "ออกแบบ",
-"duration": 0.015277777777777777,
-"duration_days": 0.000636574074074074,
-"user": "กร"
-},
-{
-"date": "2025-06-19 14:46:22",
-"stage_from": "ออกแบบ",
-"stage_to": "ตัดก่อนพิมพ์",
-"duration": 0.03222222222222222,
-"duration_days": 0.0013425925925925925,
-"user": "กร"
-},
-{
-"date": "2025-06-19 14:49:23",
-"stage_from": "ตัดก่อนพิมพ์",
-"stage_to": "เสนอราคา",
-"duration": 0.050277777777777775,
-"duration_days": 0.0020949074074074073,
-"user": "กร"
-}
-],
-"statistics": {
-"total_stages": 3,
-"total_duration_hours": 1.2883333333333333,
-"total_duration_days": 0.05368055555555556,
-"average_stage_duration": 0.42944444444444446
-}
-}
-}
+//       const result: TimelineResponse = {
+// "error": false,
+// "message": "Timeline retrieved for lead N2385 ตรายางหมึกใน",
+// "timestamp": "2025-06-19T16:00:49",
+// "data": {
+// "lead_info": {
+// "id": 3212,
+// "name": "N2385 ตรายางหมึกใน",
+// "partner_name": "Happy Doggo",
+// "email_from": false,
+// "phone": false,
+// "user_id": "กร",
+// "team_id": "ประสานงาน",
+// "create_date": "2025-05-27 08:18:42.901240",
+// "expected_revenue": 600
+// },
+// "current_status": {
+// "current_stage": "เสนอราคา",
+// "current_stage_duration_hours": 1.1905555555555556,
+// "current_stage_days": 0,
+// "is_overdue": false,
+// "last_activity_date": "2025-06-19 14:44:26",
+// "days_since_last_activity": 0
+// },
+// "timeline": [
+// {
+// "date": "2025-06-19 14:44:26",
+// "stage_from": "เสนอราคา",
+// "stage_to": "ออกแบบ",
+// "duration": 0.015277777777777777,
+// "duration_days": 0.000636574074074074,
+// "user": "กร"
+// },
+// {
+// "date": "2025-06-19 14:46:22",
+// "stage_from": "ออกแบบ",
+// "stage_to": "ตัดก่อนพิมพ์",
+// "duration": 0.03222222222222222,
+// "duration_days": 0.0013425925925925925,
+// "user": "กร"
+// },
+// {
+// "date": "2025-06-19 14:49:23",
+// "stage_from": "ตัดก่อนพิมพ์",
+// "stage_to": "เสนอราคา",
+// "duration": 0.050277777777777775,
+// "duration_days": 0.0020949074074074073,
+// "user": "กร"
+// }
+// ],
+// "statistics": {
+// "total_stages": 3,
+// "total_duration_hours": 1.2883333333333333,
+// "total_duration_days": 0.05368055555555556,
+// "average_stage_duration": 0.42944444444444446
+// }
+// }
+// }
       
       if (!result.error) {
         setTimeline(result.data);
@@ -633,6 +634,13 @@ const getCurrentStageIndex = (): number => {
     <div className="max-w-3xl mx-auto">
       {/* Top Header with Company Logo */}
       <div className="no-print mb-4 flex justify-between items-center">
+        <Button
+          variant="outline"
+          onClick={() => router.push('/')}
+          className="bg-green-50 border-green-200 text-green-700 hover:bg-green-100 hover:border-green-300"
+        >
+          🔍 ค้นหา Lead
+        </Button>
         <Image
           id="main-logo"
           src="https://erpsamuiaksorn.com/web/binary/company_logo"
@@ -641,12 +649,12 @@ const getCurrentStageIndex = (): number => {
           height={28}
           className="h-7 w-auto hidden print:block"
         />
-        <button 
+        <Button 
           onClick={handlePrint}
-          className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded"
+          className="bg-blue-600 hover:bg-blue-700 text-white"
         >
           🖨️ พิมพ์ใบสั่งงาน
-        </button>
+        </Button>
       </div>
       
       <div className="mb-20" ref={printRef}>
@@ -716,7 +724,7 @@ const getCurrentStageIndex = (): number => {
                   variant="ghost"
                   size="sm"
                   onClick={() => setShowTimeline(true)}
-                  className="text-blue-600 hover:text-blue-800 hover:bg-blue-100"
+                  className="hidden text-blue-600 hover:text-blue-800 hover:bg-blue-100"
                 >
                   📊 Timeline
                 </Button>

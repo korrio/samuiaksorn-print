@@ -34,7 +34,11 @@ export default function LeadSearch() {
 
     setIsSearching(true);
     try {
-      const domain = JSON.stringify([["name", "ilike", query.trim()]]);
+      const domain = JSON.stringify([
+    "|",
+    ["name", "ilike", query.trim()],
+    ["partner_id.name", "ilike", query.trim()]
+  ]);
       const fields = JSON.stringify(["id","name","user_id","partner_id"]);
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/crm.lead?domain=${encodeURIComponent(domain)}&fields=${encodeURIComponent(fields)}&limit=20`);
       const result: SearchResult = await response.json();
