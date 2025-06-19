@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import Image from "next/image"
 import { useRef } from 'react'
 import useFetchLeadById from "@/hooks/useFetchLeadById";
+import useCurrentUser from "@/hooks/useCurrentUser";
 import QrCodeGenerator from '@/components/QrCodeGenerator';
 import { useSearchParams } from 'next/navigation';
 
@@ -16,6 +17,7 @@ export default function PrintJobPageMobile() {
   // const jobNo = searchParams.get('job');
   
   const { lead, isLoading, error } = useFetchLeadById(id);
+  const { currentUser, setCurrentUser, clearCurrentUser, isUserAccepted } = useCurrentUser();
 
   const handlePrint = () => {
     if (printRef.current) {
@@ -116,6 +118,20 @@ export default function PrintJobPageMobile() {
     });
   };
 
+  const handleAcceptJob = () => {
+    // For demo purposes, we'll create a mock user
+    // In real implementation, you might get this from authentication context
+    const mockUser = {
+      id: 1,
+      name: "ผู้ใช้งาน",
+      email: "user@example.com",
+      acceptedAt: new Date().toISOString()
+    };
+    
+    setCurrentUser(mockUser);
+    alert(`คุณได้รับงานเรียบร้อยแล้ว`);
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
@@ -214,6 +230,33 @@ export default function PrintJobPageMobile() {
               <QrCodeGenerator id={id || undefined} />
             </div>
           </div>
+
+          {/* Current User Display */}
+          {isUserAccepted && currentUser && (
+            <div className="mt-3 p-2 bg-green-50 border border-green-200 rounded-lg">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 bg-green-200 rounded-full flex items-center justify-center text-green-700 text-xs font-bold">
+                    {currentUser.name.charAt(0)}
+                  </div>
+                  <div>
+                    <div className="text-sm font-medium text-green-800">{currentUser.name}</div>
+                    <div className="text-xs text-green-600">
+                      รับงานเมื่อ: {new Date(currentUser.acceptedAt).toLocaleString('th-TH')}
+                    </div>
+                  </div>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={clearCurrentUser}
+                  className="text-green-600 hover:text-green-800 hover:bg-green-100 text-xs p-1"
+                >
+                  เปลี่ยน
+                </Button>
+              </div>
+            </div>
+          )}
         </Card>
 
         {/* Job Details Grid */}
@@ -249,12 +292,21 @@ export default function PrintJobPageMobile() {
         <div className="flex gap-3">
           <Button 
             variant="outline" 
-            className="flex-1 bg-green-50 border-green-200 text-green-700 hover:bg-green-100 hover:border-green-300 font-medium"
-            onClick={() => {
-              console.log('รับงาน clicked');
-            }}
+            className={`flex-1 font-medium ${
+              isUserAccepted 
+                ? 'bg-green-100 border-green-300 text-green-800' 
+                : 'bg-green-50 border-green-200 text-green-700 hover:bg-green-100 hover:border-green-300'
+            }`}
+            onClick={isUserAccepted ? clearCurrentUser : handleAcceptJob}
           >
-            ✅ รับงาน
+            {isUserAccepted && currentUser ? (
+              <div className="flex flex-col items-center text-xs">
+                <span>✅ {currentUser.name}</span>
+                <span className="text-[10px] opacity-75">แตะเพื่อเปลี่ยน</span>
+              </div>
+            ) : (
+              '✅ รับงาน'
+            )}
           </Button>
           <Button 
             className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium"

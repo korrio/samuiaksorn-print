@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import Image from "next/image"
 import { useRef, useState, useEffect } from 'react'
 import useFetchLeadById from "@/hooks/useFetchLeadById";
+import useCurrentUser from "@/hooks/useCurrentUser";
 import QrCodeGenerator from '@/components/QrCodeGenerator';
 import { useSearchParams } from 'next/navigation';
 
@@ -100,6 +101,7 @@ export default function PrintJobPage() {
   console.log("job",jobNo)
   
   const { lead, isLoading, error, refetch } = useFetchLeadById(id);
+  const { currentUser, setCurrentUser, clearCurrentUser, isUserAccepted } = useCurrentUser();
 
   // Fetch stages when modal opens
   useEffect(() => {
@@ -257,27 +259,36 @@ const getCurrentStageIndex = (): number => {
   };
 
   // Accept job (change owner to current user)
-  const acceptJob = async (userId: number, userName: string): Promise<void> => {
+  const acceptJob = async (userId: number, userName: string, userEmail?: string): Promise<void> => {
     if (!lead) return;
     
     setAcceptingJob(true);
     try {
-      // Update lead owner
-      const updateResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/crm.lead/${lead.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          user_id: userId
-        })
+      // Save user to localStorage
+      setCurrentUser({
+        id: userId,
+        name: userName,
+        email: userEmail,
+        acceptedAt: new Date().toISOString()
       });
 
-      if (updateResponse.ok) {
+      // Update lead owner
+      // const updateResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/crm.lead/${lead.id}`, {
+      //   method: 'PUT',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: JSON.stringify({
+      //     user_id: userId
+      //   })
+      // });
+
+      /// if (updateResponse.ok) {
+      if(true) {
         // Refresh lead data
-        if (refetch) {
-          await refetch();
-        }
+        // if (refetch) {
+        //   await refetch();
+        // }
         setShowTeamModal(false);
         
         // Show success message
@@ -457,31 +468,50 @@ const getCurrentStageIndex = (): number => {
             <QrCodeGenerator id={id || undefined} />
           </div>
 
-          {/* Current Stage Display */}
-          <div className="hidden mb-3 p-2 bg-blue-50 rounded-lg">
-            <div className="text-sm text-gray-600">สถานะปัจจุบัน:</div>
-            <div className="font-semibold text-blue-700 flex items-center gap-2">
-              <span className="text-lg">{getStageEmoji(lead.stage_id ? lead.stage_id[1] : "")}</span>
-              {lead.stage_id ? lead.stage_id[1] : "ไม่ระบุ"}
+          {/* Current User Display */}
+          {isUserAccepted && currentUser && (
+            <div className="mb-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+              <div className="no-print flex items-center justify-between">
+                <div>
+                  <div className="text-sm text-green-600 font-medium">ผู้ใช้งานปัจจุบัน:</div>
+                  <div className="font-semibold text-green-800 flex items-center gap-2">
+                    <div className="w-6 h-6 bg-green-200 rounded-full flex items-center justify-center text-green-700 text-xs font-bold">
+                      {currentUser.name.charAt(0)}
+                    </div>
+                    {currentUser.name}
+                  </div>
+                  <div className="text-xs text-green-600 mt-1">
+                    รับงานเมื่อ: {new Date(currentUser.acceptedAt).toLocaleString('th-TH')}
+                  </div>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={clearCurrentUser}
+                  className="text-green-600 hover:text-green-800 hover:bg-green-100"
+                >
+                  เปลี่ยนผู้ใช้
+                </Button>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Main content table */}
           <table className="w-full border-collapse">
             <tbody>
-              <tr>
+              <tr className="hidden">
                 <td className="py-1 px-2 text-gray-600 w-1/4 font-medium">ลูกค้า</td>
                 <td className="py-1 px-2 w-1/4">{lead.partner_id ? lead.partner_id[1] : "-"}</td>
                 <td className="py-1 px-2 text-gray-600 w-1/4 font-medium">ผู้รับงานปัจจุบัน</td>
                 <td className="py-1 px-2 w-1/4">{lead.user_id ? lead.user_id[1] : "-"}</td>
               </tr>
-              <tr>
+              <tr className="hidden">
                 <td className="py-1 px-2 text-gray-600 font-medium">อีเมลล์</td>
                 <td className="py-1 px-2">{lead.email_from || "-"}</td>
                 <td className="py-1 px-2 text-gray-600 font-medium">วันที่นัดหมายส่งงาน</td>
                 <td className="py-1 px-2">{formatDate(lead.date_deadline)}</td>
               </tr>
-              <tr>
+              <tr className="hidden">
                 <td className="py-1 px-2 text-gray-600 font-medium">เบอร์โทร</td>
                 <td className="py-1 px-2">{lead.phone || "-"}</td>
                 <td className="py-1 px-2 text-gray-600 font-medium">ประเภทงาน</td>
@@ -598,7 +628,7 @@ const getCurrentStageIndex = (): number => {
                           key={member.id}
                           variant="outline"
                           className="w-full justify-start h-auto p-3 text-left hover:bg-blue-50 hover:border-blue-200"
-                          onClick={() => acceptJob(member.user_id[0], member.user_id[1])}
+                          onClick={() => acceptJob(member.user_id[0], member.user_id[1], member.email)}
                           disabled={acceptingJob}
                         >
                           <div className="flex items-center gap-3 w-full">
@@ -694,11 +724,22 @@ const getCurrentStageIndex = (): number => {
       <div className="no-print fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 flex justify-between gap-4 z-50 shadow-lg">
         <Button 
           variant="outline" 
-          className="flex-1 max-w-32 bg-green-50 border-green-200 text-green-700 hover:bg-green-100 hover:border-green-300"
+          className={`flex-1 max-w-32 ${
+            isUserAccepted 
+              ? 'bg-green-100 border-green-300 text-green-800' 
+              : 'bg-green-50 border-green-200 text-green-700 hover:bg-green-100 hover:border-green-300'
+          }`}
           onClick={() => setShowTeamModal(true)}
           disabled={!lead}
         >
-          🤝 รับงาน
+          {isUserAccepted && currentUser ? (
+            <div className="flex flex-col items-center text-xs">
+              <span>✅ {currentUser.name}</span>
+              <span className="text-[10px] opacity-75">คลิกเพื่อเปลี่ยน</span>
+            </div>
+          ) : (
+            '🤝 รับงาน'
+          )}
         </Button>
         <Button 
           className="flex-1 max-w-32 bg-blue-600 hover:bg-blue-700 text-white"
