@@ -13,6 +13,7 @@ import useFetchLeadById from "@/hooks/useFetchLeadById";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import QrCodeGenerator from '@/components/QrCodeGenerator';
 import { useSearchParams } from 'next/navigation';
+import Swal from 'sweetalert2';
 
 // Types
 interface Stage {
@@ -248,14 +249,26 @@ const getCurrentStageIndex = (): number => {
         }
         setShowStageModal(false);
         
-        // Show success message (you can replace this with your toast component)
-        alert(`งานถูกส่งไปยัง "${stageName}" เรียบร้อยแล้ว`);
+        // Show success message
+        await Swal.fire({
+          title: 'สำเร็จ!',
+          text: `งานถูกส่งไปยัง "${stageName}" เรียบร้อยแล้ว`,
+          icon: 'success',
+          confirmButtonText: 'ตกลง',
+          confirmButtonColor: '#10b981'
+        });
       } else {
         throw new Error('Failed to update stage');
       }
     } catch (error) {
       console.error('Error updating stage:', error);
-      alert('เกิดข้อผิดพลาดในการอัปเดตสถานะ');
+      await Swal.fire({
+        title: 'เกิดข้อผิดพลาด!',
+        text: 'เกิดข้อผิดพลาดในการอัปเดตสถานะ',
+        icon: 'error',
+        confirmButtonText: 'ตกลง',
+        confirmButtonColor: '#ef4444'
+      });
     } finally {
       setUpdatingStage(false);
     }
@@ -287,7 +300,8 @@ const getCurrentStageIndex = (): number => {
               name: "b1f8d75d35d06603",
               value: userId
             }
-          ]
+          ],
+          // user_id: userId
         })
       });
 
@@ -299,13 +313,25 @@ const getCurrentStageIndex = (): number => {
         setShowTeamModal(false);
         
         // Show success message
-        alert(`งานถูกมอบหมายให้ "${userName}" "${userId}" เรียบร้อยแล้ว`);
+        await Swal.fire({
+          title: 'สำเร็จ!',
+          text: `งานถูกมอบหมายให้ "${userName}" เรียบร้อยแล้ว`,
+          icon: 'success',
+          confirmButtonText: 'ตกลง',
+          confirmButtonColor: '#10b981'
+        });
       } else {
         throw new Error('Failed to accept job');
       }
     } catch (error) {
       console.error('Error accepting job:', error);
-      alert('เกิดข้อผิดพลาดในการรับงาน กรุณาลองใหม่อีกครั้ง');
+      await Swal.fire({
+        title: 'เกิดข้อผิดพลาด!',
+        text: 'เกิดข้อผิดพลาดในการรับงาน กรุณาลองใหม่อีกครั้ง',
+        icon: 'error',
+        confirmButtonText: 'ตกลง',
+        confirmButtonColor: '#ef4444'
+      });
     } finally {
       setAcceptingJob(false);
     }
@@ -660,18 +686,27 @@ const getCurrentStageIndex = (): number => {
                         <Button
                           key={member.id}
                           variant="outline"
-                          className="w-full justify-start h-auto p-3 text-left hover:bg-blue-50 hover:border-blue-200"
+                          className="w-full justify-start h-auto p-3 text-left hover:bg-blue-50 hover:border-blue-200 disabled:opacity-50"
                           onClick={() => acceptJob(member.id, member.user_id[1], member.email)}
                           disabled={acceptingJob}
                         >
                           <div className="flex items-center gap-3 w-full">
-                            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-medium text-sm">
-                              {member.name.charAt(0)}
-                            </div>
+                            {acceptingJob ? (
+                              <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                              </div>
+                            ) : (
+                              <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-medium text-sm">
+                                {member.name.charAt(0)}
+                              </div>
+                            )}
                             <div className="flex-1 text-left">
                               <div className="font-medium">{member.name}</div>
                               <div className="text-xs text-gray-500">{member.email}</div>
                             </div>
+                            {acceptingJob && (
+                              <div className="text-xs text-blue-600">กำลังรับงาน...</div>
+                            )}
                           </div>
                         </Button>
                       ))}
@@ -761,11 +796,16 @@ const getCurrentStageIndex = (): number => {
             isUserAccepted 
               ? 'bg-green-100 border-green-300 text-green-800' 
               : 'bg-green-50 border-green-200 text-green-700 hover:bg-green-100 hover:border-green-300'
-          }`}
+          } ${acceptingJob ? 'opacity-50' : ''}`}
           onClick={() => setShowTeamModal(true)}
-          disabled={!lead}
+          disabled={!lead || acceptingJob}
         >
-          {isUserAccepted && currentUser ? (
+          {acceptingJob ? (
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 border-2 border-green-600 border-t-transparent rounded-full animate-spin"></div>
+              <span className="text-xs">กำลังรับงาน...</span>
+            </div>
+          ) : isUserAccepted && currentUser ? (
             <div className="flex flex-col items-center text-xs">
               <span>✅ {currentUser.name}</span>
               <span className="text-[10px] opacity-75">คลิกเพื่อเปลี่ยน</span>
