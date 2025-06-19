@@ -47,7 +47,7 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
   }
 
   // Build OG image URL
-  const ogImageUrl = new URL('/api/og', process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000');
+  const ogImageUrl = new URL('/api/og', 'https://print.erpsamuiaksorn.com');
   if (id) ogImageUrl.searchParams.set('id', id);
   if (jobNo) ogImageUrl.searchParams.set('job', jobNo);
 
