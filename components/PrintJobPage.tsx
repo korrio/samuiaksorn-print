@@ -218,8 +218,11 @@ const getCurrentStageIndex = (): number => {
     const currentIndex = getCurrentStageIndex();
     if (currentIndex === -1) return stages;
     
-    // Return stages that come after the current stage
-    return stages.filter((stage, index) => index > currentIndex);
+    // Return stages that come after the current stage, excluding restricted admin stages
+    const restrictedStages = ['การเงิน', 'งานเก่า'];
+    return stages.filter((stage, index) => 
+      index > currentIndex && !restrictedStages.includes(stage.name)
+    );
   };
 
   // Update lead stage
@@ -468,33 +471,50 @@ const getCurrentStageIndex = (): number => {
             <QrCodeGenerator id={id || undefined} />
           </div>
 
-          {/* Current User Display */}
-          {isUserAccepted && currentUser && (
-            <div className="mb-3 p-3 bg-green-50 border border-green-200 rounded-lg">
-              <div className="no-print flex items-center justify-between">
-                <div>
-                  <div className="text-sm text-green-600 font-medium">ผู้ใช้งานปัจจุบัน:</div>
-                  <div className="font-semibold text-green-800 flex items-center gap-2">
-                    <div className="w-6 h-6 bg-green-200 rounded-full flex items-center justify-center text-green-700 text-xs font-bold">
-                      {currentUser.name.charAt(0)}
+          {/* Current User and Stage Display */}
+          <div className="mb-3 grid grid-cols-1 md:grid-cols-2 gap-3">
+            {/* Current User Display */}
+            {isUserAccepted && currentUser && (
+              <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+                <div className="no-print flex items-center justify-between">
+                  <div>
+                    <div className="text-sm text-green-600 font-medium">ผู้ใช้งานปัจจุบัน:</div>
+                    <div className="font-semibold text-green-800 flex items-center gap-2">
+                      <div className="w-6 h-6 bg-green-200 rounded-full flex items-center justify-center text-green-700 text-xs font-bold">
+                        {currentUser.name.charAt(0)}
+                      </div>
+                      {currentUser.name}
                     </div>
-                    {currentUser.name}
+                    <div className="text-xs text-green-600 mt-1">
+                      รับงานเมื่อ: {new Date(currentUser.acceptedAt).toLocaleString('th-TH')}
+                    </div>
                   </div>
-                  <div className="text-xs text-green-600 mt-1">
-                    รับงานเมื่อ: {new Date(currentUser.acceptedAt).toLocaleString('th-TH')}
-                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={clearCurrentUser}
+                    className="text-green-600 hover:text-green-800 hover:bg-green-100"
+                  >
+                    เปลี่ยนผู้ใช้
+                  </Button>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={clearCurrentUser}
-                  className="text-green-600 hover:text-green-800 hover:bg-green-100"
-                >
-                  เปลี่ยนผู้ใช้
-                </Button>
+              </div>
+            )}
+            
+            {/* Current Stage Display */}
+            <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="no-print">
+                <div className="text-sm text-blue-600 font-medium">สถานะงานปัจจุบัน:</div>
+                <div className="font-semibold text-blue-800 flex items-center gap-2">
+                  <span className="text-lg">{getStageEmoji(lead.stage_id ? lead.stage_id[1] : "")}</span>
+                  {lead.stage_id ? lead.stage_id[1] : "ไม่ระบุ"}
+                </div>
+                <div className="text-xs text-blue-600 mt-1">
+                  อัปเดตล่าสุด: {new Date(lead.write_date).toLocaleString('th-TH')}
+                </div>
               </div>
             </div>
-          )}
+          </div>
 
           {/* Main content table */}
           <table className="w-full border-collapse">
