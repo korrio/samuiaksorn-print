@@ -38,6 +38,53 @@ interface ApiResponse<T> {
   data: T;
 }
 
+interface TimelineEntry {
+  date: string;
+  stage_from: string;
+  stage_to: string;
+  duration: number;
+  duration_days: number;
+  user: string;
+}
+
+interface CurrentStatus {
+  current_stage: string;
+  current_stage_duration_hours: number;
+  current_stage_days: number;
+  is_overdue: boolean;
+  last_activity_date: string;
+  days_since_last_activity: number;
+}
+
+interface TimelineData {
+  lead_info: {
+    id: number;
+    name: string;
+    partner_name: string;
+    email_from: boolean;
+    phone: boolean;
+    user_id: string;
+    team_id: string;
+    create_date: string;
+    expected_revenue: number;
+  };
+  current_status: CurrentStatus;
+  timeline: TimelineEntry[];
+  statistics: {
+    total_stages: number;
+    total_duration_hours: number;
+    total_duration_days: number;
+    average_stage_duration: number;
+  };
+}
+
+interface TimelineResponse {
+  error: boolean;
+  message: string;
+  timestamp: string;
+  data: TimelineData;
+}
+
 // interface LeadProperty {
 //   name: string;
 //   value: string;
@@ -92,10 +139,13 @@ export default function PrintJobPage() {
   // State for modal and stages
   const [showStageModal, setShowStageModal] = useState(false);
   const [showTeamModal, setShowTeamModal] = useState(false);
+  const [showTimeline, setShowTimeline] = useState(false);
   const [stages, setStages] = useState<Stage[]>([]);
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
+  const [timeline, setTimeline] = useState<TimelineData | null>(null);
   const [loadingStages, setLoadingStages] = useState(false);
   const [loadingTeamMembers, setLoadingTeamMembers] = useState(false);
+  const [loadingTimeline, setLoadingTimeline] = useState(false);
   const [updatingStage, setUpdatingStage] = useState(false);
   const [acceptingJob, setAcceptingJob] = useState(false);
   
@@ -117,6 +167,13 @@ export default function PrintJobPage() {
       fetchTeamMembers();
     }
   }, [showTeamModal, teamMembers.length]);
+
+  // Fetch timeline when modal opens
+  useEffect(() => {
+    if (showTimeline && timeline === null && lead?.id) {
+      fetchTimeline();
+    }
+  }, [showTimeline, timeline, lead?.id]);
 
   // Fetch available stages
   const fetchStages = async () => {
@@ -163,6 +220,86 @@ export default function PrintJobPage() {
       console.error('Error fetching team members:', error);
     } finally {
       setLoadingTeamMembers(false);
+    }
+  };
+
+  // Fetch timeline
+  const fetchTimeline = async () => {
+    if (!lead?.id) return;
+    
+    setLoadingTimeline(true);
+    try {
+      // const response = await fetch(`https://erpsamuiaksorn.com/api/crm/lead/${lead.id}/timeline`);
+      // const result: TimelineResponse = await response.json();
+
+      const result: TimelineResponse = {
+"error": false,
+"message": "Timeline retrieved for lead N2385 ตรายางหมึกใน",
+"timestamp": "2025-06-19T16:00:49",
+"data": {
+"lead_info": {
+"id": 3212,
+"name": "N2385 ตรายางหมึกใน",
+"partner_name": "Happy Doggo",
+"email_from": false,
+"phone": false,
+"user_id": "กร",
+"team_id": "ประสานงาน",
+"create_date": "2025-05-27 08:18:42.901240",
+"expected_revenue": 600
+},
+"current_status": {
+"current_stage": "เสนอราคา",
+"current_stage_duration_hours": 1.1905555555555556,
+"current_stage_days": 0,
+"is_overdue": false,
+"last_activity_date": "2025-06-19 14:44:26",
+"days_since_last_activity": 0
+},
+"timeline": [
+{
+"date": "2025-06-19 14:44:26",
+"stage_from": "เสนอราคา",
+"stage_to": "ออกแบบ",
+"duration": 0.015277777777777777,
+"duration_days": 0.000636574074074074,
+"user": "กร"
+},
+{
+"date": "2025-06-19 14:46:22",
+"stage_from": "ออกแบบ",
+"stage_to": "ตัดก่อนพิมพ์",
+"duration": 0.03222222222222222,
+"duration_days": 0.0013425925925925925,
+"user": "กร"
+},
+{
+"date": "2025-06-19 14:49:23",
+"stage_from": "ตัดก่อนพิมพ์",
+"stage_to": "เสนอราคา",
+"duration": 0.050277777777777775,
+"duration_days": 0.0020949074074074073,
+"user": "กร"
+}
+],
+"statistics": {
+"total_stages": 3,
+"total_duration_hours": 1.2883333333333333,
+"total_duration_days": 0.05368055555555556,
+"average_stage_duration": 0.42944444444444446
+}
+}
+}
+      
+      if (!result.error) {
+        setTimeline(result.data);
+      } else {
+        console.error('Failed to fetch timeline');
+      }
+    } catch (error) {
+      console.error('Error fetching timeline:', error);
+    } finally {
+      setLoadingTimeline(false);
     }
   };
 
@@ -444,6 +581,28 @@ const getCurrentStageIndex = (): number => {
     });
   };
 
+  // Format duration
+  const formatDuration = (hours: number): string => {
+    if (hours < 1) {
+      const minutes = Math.round(hours * 60);
+      return `${minutes} นาที`;
+    } else if (hours < 24) {
+      return `${hours.toFixed(1)} ชั่วโมง`;
+    } else {
+      const days = Math.floor(hours / 24);
+      const remainingHours = Math.round(hours % 24);
+      return remainingHours > 0 ? `${days} วัน ${remainingHours} ชั่วโมง` : `${days} วัน`;
+    }
+  };
+
+  // Get duration color based on hours
+  const getDurationColor = (hours: number): string => {
+    if (hours < 4) return 'text-green-600';
+    if (hours < 24) return 'text-yellow-600';
+    if (hours < 72) return 'text-orange-600';
+    return 'text-red-600';
+  };
+
   if (isLoading) {
     return (
       <Card className="p-6 max-w-3xl mx-auto">
@@ -542,15 +701,25 @@ const getCurrentStageIndex = (): number => {
             
             {/* Current Stage Display */}
             <div className="no-print p-3 bg-blue-50 border border-blue-200 rounded-lg">
-              <div className="no-print">
-                <div className="text-sm text-blue-600 font-medium">สถานะงานปัจจุบัน:</div>
-                <div className="font-semibold text-blue-800 flex items-center gap-2">
-                  <span className="text-lg">{getStageEmoji(lead.stage_id ? lead.stage_id[1] : "")}</span>
-                  {lead.stage_id ? lead.stage_id[1] : "ไม่ระบุ"}
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-sm text-blue-600 font-medium">สถานะงานปัจจุบัน:</div>
+                  <div className="font-semibold text-blue-800 flex items-center gap-2">
+                    <span className="text-lg">{getStageEmoji(lead.stage_id ? lead.stage_id[1] : "")}</span>
+                    {lead.stage_id ? lead.stage_id[1] : "ไม่ระบุ"}
+                  </div>
+                  <div className="text-xs text-blue-600 mt-1">
+                    อัปเดตล่าสุด: {new Date(lead.write_date).toLocaleString('th-TH')}
+                  </div>
                 </div>
-                <div className="text-xs text-blue-600 mt-1">
-                  อัปเดตล่าสุด: {new Date(lead.write_date).toLocaleString('th-TH')}
-                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowTimeline(true)}
+                  className="text-blue-600 hover:text-blue-800 hover:bg-blue-100"
+                >
+                  📊 Timeline
+                </Button>
               </div>
             </div>
           </div>
@@ -782,6 +951,113 @@ const getCurrentStageIndex = (): number => {
             {updatingStage && (
               <div className="text-center py-2">
                 <div className="text-sm text-blue-600">กำลังอัปเดตสถานะ...</div>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Timeline Modal */}
+      <Dialog open={showTimeline} onOpenChange={setShowTimeline}>
+        <DialogContent className="sm:max-w-3xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Timeline การดำเนินงาน</DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            {loadingTimeline ? (
+              <div className="text-center py-8">
+                <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+                <div className="text-sm text-gray-500">กำลังโหลด timeline...</div>
+              </div>
+            ) : timeline ? (
+              <div className="space-y-6">
+                {/* Current Status */}
+                <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <h3 className="font-medium text-blue-800 mb-2">สถานะปัจจุบัน</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                    <div>
+                      <div className="text-gray-600">ขั้นตอน:</div>
+                      <div className="font-medium flex items-center gap-1">
+                        <span>{getStageEmoji(timeline.current_status.current_stage)}</span>
+                        {timeline.current_status.current_stage}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-gray-600">ระยะเวลาในขั้นตอนนี้:</div>
+                      <div className={`font-medium ${getDurationColor(timeline.current_status.current_stage_duration_hours)}`}>
+                        {formatDuration(timeline.current_status.current_stage_duration_hours)}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-gray-600">กิจกรรมล่าสุด:</div>
+                      <div className="font-medium">
+                        {timeline.current_status.days_since_last_activity === 0 ? 'วันนี้' : 
+                         `${timeline.current_status.days_since_last_activity} วันที่แล้ว`}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Statistics */}
+                <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                  <h3 className="font-medium text-gray-800 mb-2">สถิติรวม</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                    <div>
+                      <div className="text-gray-600">จำนวนขั้นตอน:</div>
+                      <div className="font-medium">{timeline.statistics.total_stages} ขั้นตอน</div>
+                    </div>
+                    <div>
+                      <div className="text-gray-600">เวลารวม:</div>
+                      <div className="font-medium">{formatDuration(timeline.statistics.total_duration_hours)}</div>
+                    </div>
+                    <div>
+                      <div className="text-gray-600">เฉลี่ยต่อขั้นตอน:</div>
+                      <div className="font-medium">{formatDuration(timeline.statistics.average_stage_duration)}</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Timeline */}
+                <div>
+                  <h3 className="font-medium text-gray-800 mb-3">ประวัติการเปลี่ยนขั้นตอน</h3>
+                  {timeline.timeline.length > 0 ? (
+                    <div className="space-y-3">
+                      {timeline.timeline.map((entry, index) => (
+                        <div key={index} className="flex items-start gap-4 p-3 border border-gray-200 rounded-lg">
+                          <div className="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-medium text-sm">
+                            {timeline.timeline.length - index}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 text-sm text-gray-600 mb-1">
+                              <span>{new Date(entry.date).toLocaleString('th-TH')}</span>
+                              <span>•</span>
+                              <span>{entry.user}</span>
+                            </div>
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="text-sm">{getStageEmoji(entry.stage_from)}</span>
+                              <span className="text-sm font-medium">{entry.stage_from}</span>
+                              <span className="text-gray-400">→</span>
+                              <span className="text-sm">{getStageEmoji(entry.stage_to)}</span>
+                              <span className="text-sm font-medium">{entry.stage_to}</span>
+                            </div>
+                            <div className={`text-sm ${getDurationColor(entry.duration)}`}>
+                              ใช้เวลา: {formatDuration(entry.duration)}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-4 text-gray-500">
+                      ยังไม่มีการเปลี่ยนขั้นตอน
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-8 text-gray-500">
+                ไม่สามารถโหลด timeline ได้
               </div>
             )}
           </div>
