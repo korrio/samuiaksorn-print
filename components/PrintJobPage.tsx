@@ -433,7 +433,7 @@ const getCurrentStageIndex = (): number => {
           onClick={handlePrint}
           className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded"
         >
-          Print Job Details
+          พิมพ์ใบสั่งงาน
         </button>
       </div>
       
@@ -458,7 +458,7 @@ const getCurrentStageIndex = (): number => {
           </div>
 
           {/* Current Stage Display */}
-          <div className="mb-3 p-2 bg-blue-50 rounded-lg">
+          <div className="hidden mb-3 p-2 bg-blue-50 rounded-lg">
             <div className="text-sm text-gray-600">สถานะปัจจุบัน:</div>
             <div className="font-semibold text-blue-700 flex items-center gap-2">
               <span className="text-lg">{getStageEmoji(lead.stage_id ? lead.stage_id[1] : "")}</span>
