@@ -149,6 +149,8 @@ export default function PrintJobPage() {
   const [loadingTimeline, setLoadingTimeline] = useState(false);
   const [updatingStage, setUpdatingStage] = useState(false);
   const [acceptingJob, setAcceptingJob] = useState(false);
+  const [relatedLeads, setRelatedLeads] = useState<any[]>([]);
+  const [loadingRelatedLeads, setLoadingRelatedLeads] = useState(false);
   
   console.log("job",jobNo)
   
@@ -175,6 +177,16 @@ export default function PrintJobPage() {
       fetchTimeline();
     }
   }, [showTimeline, timeline, lead?.id]);
+
+  // Fetch related leads when lead data is available
+  useEffect(() => {
+    if (lead && relatedLeads.length === 0) {
+      const relatedLeadIds = getPropertyValueArray("c800637841b7aff1");
+      if (relatedLeadIds.length > 0) {
+        fetchRelatedLeads(relatedLeadIds);
+      }
+    }
+  }, [lead, relatedLeads.length]);
 
   // Fetch available stages
   const fetchStages = async () => {
@@ -301,6 +313,34 @@ export default function PrintJobPage() {
       console.error('Error fetching timeline:', error);
     } finally {
       setLoadingTimeline(false);
+    }
+  };
+
+  // Fetch related leads
+  const fetchRelatedLeads = async (relatedLeadIds: [number, string][]) => {
+    setLoadingRelatedLeads(true);
+    try {
+      const leadPromises = relatedLeadIds.map(async ([leadId, leadName]) => {
+        try {
+          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/crm.lead/${leadId}`);
+          const result = await response.json();
+          if (result.success) {
+            return { ...result.data, originalName: leadName };
+          }
+          return null;
+        } catch (error) {
+          console.error(`Error fetching lead ${leadId}:`, error);
+          return null;
+        }
+      });
+
+      const fetchedLeads = await Promise.all(leadPromises);
+      const validLeads = fetchedLeads.filter(lead => lead !== null);
+      setRelatedLeads(validLeads);
+    } catch (error) {
+      console.error('Error fetching related leads:', error);
+    } finally {
+      setLoadingRelatedLeads(false);
     }
   };
 
@@ -572,6 +612,45 @@ const getCurrentStageIndex = (): number => {
     return prop.value || defaultValue;
   };
 
+  const getPropertyValueRelated = (thelead: any, name: string, defaultValue: string = "-"): string => {
+    if (!lead) return defaultValue;
+    
+    const prop = thelead.lead_properties.find((p: any) => p.name === name);
+    if (!prop) return defaultValue;
+    
+    // Handle selection type properties
+    if (prop.type === 'selection' && prop.selection) {
+      const selectedOption = prop.selection.find((option: any) => option[0] === prop.value);
+      return selectedOption ? selectedOption[1] : defaultValue;
+    }
+    
+    return prop.value || defaultValue;
+  };
+
+  const getPropertyValueAdvanced = (name: string, defaultValue: string = "-"): React.JSX.Element => {
+    if (!lead) {
+      return <span>{defaultValue}</span>;
+    }
+    
+    const prop = lead.lead_properties.find(p => p.name === name);
+    console.log("prop", prop);
+    
+    if (!prop || !prop.value?.[0]) {
+      return <span>{defaultValue}</span>;
+    }
+    
+    return <a href={`?id=${prop.value[0][0]}`}>{prop.value[0][1]}</a>;
+  };
+
+  const getPropertyValueArray = (name: string): [number, string][] => {
+    if (!lead) return [];
+    
+    const prop = lead.lead_properties.find(p => p.name === name);
+    if (!prop || !prop.value || !Array.isArray(prop.value)) return [];
+    
+    return prop.value;
+  };
+
   // Format date
   const formatDate = (dateString: string | false): string => {
     if (!dateString) return "-";
@@ -757,7 +836,7 @@ const getCurrentStageIndex = (): number => {
                 <td className="py-1 px-2 text-gray-600 font-medium">Job No.</td>
                 <td className="py-1 px-2">{getPropertyValue("2f9b502ecd32baca")}</td>
                 <td className="py-1 px-2 text-gray-600 font-medium">(งานเก่า) Job No.</td>
-                <td className="py-1 px-2">{getPropertyValue("455051be9d5872b1")}</td>
+                <td className="py-1 px-2">{getPropertyValueAdvanced("c800637841b7aff1")}</td>
               </tr>
               <tr>
                 <td className="py-1 px-2 text-gray-600 font-medium">รหัสลูกค้า</td>
@@ -817,7 +896,7 @@ const getCurrentStageIndex = (): number => {
                 <td className="py-1 px-2 text-gray-600 font-medium">Stock งาน</td>
                 <td className="py-1 px-2">{getPropertyValue("f97e8d714c4323ac")}</td>
                 <td className="py-1 px-2 text-gray-600 font-medium">Job PL / Job อาร์ตเก่า</td>
-                <td className="py-1 px-2">{getPropertyValue("d66c58f992464e87")}</td>
+                <td className="py-1 px-2">{getPropertyValue("a650bebd1ba8f7c2")}</td>
               </tr>
               <tr>
                 <td className="py-1 px-2 text-gray-600 font-medium">วันที่เปิดงาน</td>
@@ -837,6 +916,110 @@ const getCurrentStageIndex = (): number => {
           )}
         </Card>
       </div>
+
+      {/* Related Leads Card */}
+      {getPropertyValueArray("c800637841b7aff1").length > 0 && (
+        <div className="mb-20">
+          <Card className="p-4 max-w-3xl mx-auto">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                <span className="text-xl">🔗</span>
+                งานที่เกี่ยวข้อง
+              </h3>
+              <div className="text-sm text-gray-500">
+                {getPropertyValueArray("c800637841b7aff1").length} รายการ
+              </div>
+            </div>
+            
+            {loadingRelatedLeads ? (
+              <div className="text-center py-8">
+                <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+                <div className="text-sm text-gray-500">กำลังโหลดข้อมูลงานที่เกี่ยวข้อง...</div>
+              </div>
+            ) : relatedLeads.length > 0 ? (
+              <div className="grid gap-3">
+                {relatedLeads.map((relatedLead, index) => (
+                  <div key={index} className="border border-gray-200 rounded-lg p-3 hover:bg-gray-50 transition-colors">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <a 
+                            href={`?id=${relatedLead.id}`}
+                            className="text-blue-600 hover:text-blue-800 font-medium underline"
+                          >
+                            {relatedLead.originalName || relatedLead.name}
+                          </a>
+                          <span className="text-sm text-gray-500">
+                            (ID: {relatedLead.id})
+                          </span>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                          <div>
+                            <span className="text-gray-600">ลูกค้า:</span>
+                            <span className="ml-1 font-medium">
+                              {relatedLead.partner_id ? relatedLead.partner_id[1] : "-"}
+                            </span>
+                          </div>
+                          <div>
+                            <span className="text-gray-600">ราคา:</span>
+                            <span className="ml-1 font-medium">
+                              {relatedLead.expected_revenue ? `${relatedLead.expected_revenue.toFixed(2)} บาท` : "-"}
+                            </span>
+                          </div>
+{/*                          <div>
+                            <span className="text-gray-600">Job No.:</span>
+                            <span className="ml-1 font-medium">
+                              {relatedLead.lead_properties ? 
+                                relatedLead.lead_properties.find((p: any) => p.name === "2f9b502ecd32baca")?.value || "-" 
+                                : "-"
+                              }
+                            </span>
+                          </div>*/}
+                          <div>
+                            <span className="text-gray-600">จำนวนใบ/ชุด:</span>
+                            <span className="ml-1 font-medium">
+                              {getPropertyValueRelated(relatedLead, "a1c403ebe63df23d")}
+                            </span>
+                          </div>
+                          <div>
+                            <span className="text-gray-600">ลำดับสีกระดาษ:</span>
+                            <span className="ml-1 font-medium">
+                              {getPropertyValueRelated(relatedLead, "d788801775fe4bf4")}
+                            </span>
+                          </div>
+{/*                          <tr>
+                <td className="py-1 px-2 text-gray-600 font-medium">จำนวนใบ/ชุด</td>
+                <td className="py-1 px-2">{getPropertyValue("a1c403ebe63df23d")}</td>
+                <td className="py-1 px-2 text-gray-600 font-medium">ลำดับสีกระดาษ</td>
+                <td className="py-1 px-2">{getPropertyValue("d788801775fe4bf4")}</td>
+              </tr>*/}
+                        </div>
+                      </div>
+                      
+                      <div className="flex flex-col gap-1 ml-4">
+                        <a 
+                          href={`?id=${relatedLead.id}`}
+                          className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded hover:bg-blue-200 transition-colors"
+                        >
+                          ดูรายละเอียด
+                        </a>
+                        <div className="text-xs text-gray-400">
+                          {formatDate(relatedLead.create_date)}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-4 text-gray-500">
+                ไม่สามารถโหลดข้อมูลงานที่เกี่ยวข้องได้
+              </div>
+            )}
+          </Card>
+        </div>
+      )}
 
       {/* Team Member Selection Modal */}
       <Dialog open={showTeamModal} onOpenChange={setShowTeamModal}>
