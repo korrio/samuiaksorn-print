@@ -718,7 +718,7 @@ const getCurrentStageIndex = (): number => {
           onClick={() => router.push('/')}
           className="bg-green-50 border-green-200 text-green-700 hover:bg-green-100 hover:border-green-300"
         >
-          🔍 ค้นหา Lead
+          🔍 ค้นหาใบสั่งงาน
         </Button>
         <Image
           id="main-logo"
@@ -915,12 +915,11 @@ const getCurrentStageIndex = (): number => {
             </div>
           )}
         </Card>
-      </div>
-
-      {/* Related Leads Card */}
+        {/* Related Leads Card */}
       {getPropertyValueArray("c800637841b7aff1").length > 0 && (
         <div className="mb-20">
-          <Card className="p-4 max-w-3xl mx-auto">
+          <Card className="p-0 max-w-3xl mx-auto shadow-none border-none card">
+            <div className="p-4">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
                 <span className="text-xl">🔗</span>
@@ -967,15 +966,6 @@ const getCurrentStageIndex = (): number => {
                               {relatedLead.expected_revenue ? `${relatedLead.expected_revenue.toFixed(2)} บาท` : "-"}
                             </span>
                           </div>
-{/*                          <div>
-                            <span className="text-gray-600">Job No.:</span>
-                            <span className="ml-1 font-medium">
-                              {relatedLead.lead_properties ? 
-                                relatedLead.lead_properties.find((p: any) => p.name === "2f9b502ecd32baca")?.value || "-" 
-                                : "-"
-                              }
-                            </span>
-                          </div>*/}
                           <div>
                             <span className="text-gray-600">จำนวนใบ/ชุด:</span>
                             <span className="ml-1 font-medium">
@@ -988,12 +978,6 @@ const getCurrentStageIndex = (): number => {
                               {getPropertyValueRelated(relatedLead, "d788801775fe4bf4")}
                             </span>
                           </div>
-{/*                          <tr>
-                <td className="py-1 px-2 text-gray-600 font-medium">จำนวนใบ/ชุด</td>
-                <td className="py-1 px-2">{getPropertyValue("a1c403ebe63df23d")}</td>
-                <td className="py-1 px-2 text-gray-600 font-medium">ลำดับสีกระดาษ</td>
-                <td className="py-1 px-2">{getPropertyValue("d788801775fe4bf4")}</td>
-              </tr>*/}
                         </div>
                       </div>
                       
@@ -1017,9 +1001,13 @@ const getCurrentStageIndex = (): number => {
                 ไม่สามารถโหลดข้อมูลงานที่เกี่ยวข้องได้
               </div>
             )}
+            </div>
           </Card>
         </div>
       )}
+      </div>
+
+      
 
       {/* Team Member Selection Modal */}
       <Dialog open={showTeamModal} onOpenChange={setShowTeamModal}>
