@@ -4,6 +4,7 @@ import PrintJobPage from '@/components/PrintJobPage';
 // import PrintJobPageMobile from '@/components/PrintJobPageMobile'; // Your mobile-optimized component
 import Loading from '@/components/Loading';
 import LeadSearch from '@/components/LeadSearch';
+import RecentActivities from '@/components/RecentActivities';
 
 type Props = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
@@ -88,6 +89,9 @@ export default async function Page({ searchParams }: Props) {
     return (
       <main>
         <LeadSearch />
+        <div className="mt-8 max-w-3xl mx-auto p-6">
+          <RecentActivities />
+        </div>
       </main>
     );
   }
