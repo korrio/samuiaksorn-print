@@ -69,14 +69,23 @@ const RecentActivities = () => {
 
   useEffect(() => {
     const fetchActivities = async () => {
+      let data: ApiResponse;
       try {
-        // const response = await fetch('https://erpsamuiaksorn.com/api/crm/activities/recent');
-        // if (!response.ok) {
-        //   throw new Error('Failed to fetch activities');
-        // }
-        // const data: ApiResponse = await response.json();
+        
+        const response = await fetch('https://erpsamuiaksorn.com/api/crm/activities/recent');
+        if (!response.ok) {
+          throw new Error('Failed to fetch activities');
+        }
+        data = await response.json();
 
-        const data: ApiResponse = {
+        
+        if (data.error) {
+          throw new Error(data.message);
+        }
+        setActivities(data.data.activities);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An error occurred');
+        data = {
 "error": false,
 "message": "Retrieved 10 recent activities",
 "timestamp": "2025-06-20T11:11:29+07:00",
@@ -310,12 +319,8 @@ const RecentActivities = () => {
 }
 }
 }
-        if (data.error) {
-          throw new Error(data.message);
-        }
-        setActivities(data.data.activities);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
+
+setActivities(data.data.activities);
       } finally {
         setLoading(false);
       }
