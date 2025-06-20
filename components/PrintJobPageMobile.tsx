@@ -170,7 +170,7 @@ export default function PrintJobPageMobile() {
     { label: "เบอร์โทร", value: lead.phone || "-" },
     { label: "ประเภทงาน", value: lead.tag_ids.length > 0 ? lead.tag_ids.join(', ') : "-" },
     { label: "Job No.", value: getPropertyValue("2f9b502ecd32baca") },
-    { label: "งานเก่า Job No.", value: getPropertyValue("455051be9d5872b1") },
+    { label: "งานเก่า Job No.", value: getPropertyValue("c800637841b7aff1") },
     { label: "รหัสลูกค้า", value: getPropertyValue("781a8e4050b75ea0") },
     { label: "ช่างอาร์ต", value: getPropertyValue("cfa88ab31faaa9e3") },
     { label: "เครื่องพิมพ์", value: getPropertyValue("05545f6d64cf2f2e") },
@@ -190,7 +190,7 @@ export default function PrintJobPageMobile() {
     { label: "ใบเสร็จ", value: getPropertyValue("30e657f963f332d3") },
     { label: "บิล No.", value: getPropertyValue("1e1a2c1139e73a55") },
     { label: "Stock งาน", value: getPropertyValue("f97e8d714c4323ac") },
-    { label: "Job PL/อาร์ตเก่า", value: getPropertyValue("d66c58f992464e87") },
+    { label: "Job PL/อาร์ตเก่า", value: getPropertyValue("a650bebd1ba8f7c2") },
     { label: "วันเปิดงาน", value: formatDate(lead.date_open) },
     { label: "วันปิดงาน", value: formatDate(lead.date_closed) },
   ];
