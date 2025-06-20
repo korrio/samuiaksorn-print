@@ -69,22 +69,14 @@ const RecentActivities = () => {
 
   useEffect(() => {
     const fetchActivities = async () => {
-      let data: ApiResponse;
       try {
-        
-        const response = await fetch('https://erpsamuiaksorn.com/api/crm/activities/recent');
-        if (!response.ok) {
-          throw new Error('Failed to fetch activities');
-        }
-        data = await response.json();
+        let data: ApiResponse;
+        // const response = await fetch('https://erpsamuiaksorn.com/api/crm/activities/recent');
+        // if (!response.ok) {
+        //   throw new Error('Failed to fetch activities');
+        // }
+        // data = await response.json();
 
-        
-        if (data.error) {
-          throw new Error(data.message);
-        }
-        setActivities(data.data.activities);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
         data = {
 "error": false,
 "message": "Retrieved 10 recent activities",
@@ -319,8 +311,12 @@ const RecentActivities = () => {
 }
 }
 }
-
-setActivities(data.data.activities);
+        if (data.error) {
+          throw new Error(data.message);
+        }
+        setActivities(data.data.activities);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An error occurred');
       } finally {
         setLoading(false);
       }
@@ -405,7 +401,7 @@ setActivities(data.data.activities);
         <CardTitle>กิจกรรมล่าสุด</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4 max-h-96 overflow-y-auto">
-        {activities.slice(0, 5).map((activity, index) => (
+        {activities.slice(0, 20).map((activity, index) => (
           <div key={index} className="border-l-4 border-gray-200 pl-4 pb-4">
             <div className="flex items-start justify-between">
               <div className="flex-1">
