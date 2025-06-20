@@ -70,14 +70,14 @@ const RecentActivities = () => {
   useEffect(() => {
     const fetchActivities = async () => {
       try {
-        let data: ApiResponse;
+        // let data: ApiResponse;
         // const response = await fetch('https://erpsamuiaksorn.com/api/crm/activities/recent');
         // if (!response.ok) {
         //   throw new Error('Failed to fetch activities');
         // }
         // data = await response.json();
 
-        data = {
+        const data: ApiResponse = {
 "error": false,
 "message": "Retrieved 10 recent activities",
 "timestamp": "2025-06-20T11:11:29+07:00",
