@@ -737,7 +737,7 @@ const getCurrentStageIndex = (): number => {
       </div>
       
       <div className="mb-20" ref={printRef}>
-        <Card className="p-2 relative card">
+        <Card className="p-2 relative card  shadow-none">
           {/* Header with logo and QR */}
           <div className="flex justify-between items-start mb-3 print-header">
             <div>
@@ -917,9 +917,9 @@ const getCurrentStageIndex = (): number => {
         </Card>
         {/* Related Leads Card */}
       {getPropertyValueArray("c800637841b7aff1").length > 0 && (
-        <div className="mb-20">
+        <div className="mb-20 mt-5">
           <Card className="p-0 max-w-3xl mx-auto shadow-none border-none card">
-            <div className="p-4">
+            <div className="">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
                 <span className="text-xl">🔗</span>
@@ -976,6 +976,12 @@ const getCurrentStageIndex = (): number => {
                             <span className="text-gray-600">ลำดับสีกระดาษ:</span>
                             <span className="ml-1 font-medium">
                               {getPropertyValueRelated(relatedLead, "d788801775fe4bf4")}
+                            </span>
+                          </div>
+                          <div>
+                            <span className="text-gray-600">ช่างอาร์ต:</span>
+                            <span className="ml-1 font-medium">
+                              {getPropertyValueRelated(relatedLead, "cfa88ab31faaa9e3")}
                             </span>
                           </div>
                         </div>
