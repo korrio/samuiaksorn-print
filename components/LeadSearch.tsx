@@ -26,7 +26,7 @@ export default function LeadSearch() {
   const [hasSearched, setHasSearched] = useState(false);
 
   const searchLeads = useCallback(async (query: string) => {
-    if (!query.trim()) {
+    if (!query.trim() || query.trim().length < 5) {
       setSearchResults([]);
       setHasSearched(false);
       return;
@@ -67,8 +67,8 @@ export default function LeadSearch() {
     const value = e.target.value;
     setSearchQuery(value);
     
-    // Auto-search after 500ms delay
-    if (value.trim()) {
+    // Auto-search after 500ms delay, only if at least 5 characters
+    if (value.trim().length >= 5) {
       const timeoutId = setTimeout(() => {
         searchLeads(value);
       }, 500);
@@ -104,7 +104,7 @@ export default function LeadSearch() {
               type="text"
               value={searchQuery}
               onChange={handleInputChange}
-              placeholder="ใส่ชื่องาน เช่น นามบัตร, โบรชัวร์, ใบปลิว..."
+              placeholder="ใส่ชื่องาน เช่น นามบัตร, โบรชัวร์, ใบปลิว... (อย่างน้อย 5 ตัวอักษร)"
               className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
               disabled={isSearching}
             />
@@ -112,7 +112,7 @@ export default function LeadSearch() {
           <Button 
             type="submit" 
             className="w-full bg-blue-600 hover:bg-blue-700"
-            disabled={isSearching || !searchQuery.trim()}
+            disabled={isSearching || !searchQuery.trim() || searchQuery.trim().length < 5}
           >
             {isSearching ? (
               <div className="flex items-center gap-2">
@@ -194,7 +194,7 @@ export default function LeadSearch() {
         <Card className="p-6 bg-blue-50 border-blue-200">
           <h3 className="font-medium text-blue-800 mb-2">วิธีใช้งาน</h3>
           <ul className="text-sm text-blue-700 space-y-1">
-            <li>• ใส่ชื่องานหรือคำค้นหาในช่องด้านบน</li>
+            <li>• ใส่ชื่องานหรือคำค้นหาในช่องด้านบน (อย่างน้อย 5 ตัวอักษร)</li>
             <li>• ระบบจะค้นหาอัตโนมัติขณะที่คุณพิมพ์</li>
             <li>• คลิก &ldquo;ดูรายละเอียด&rdquo; เพื่อเปิดใบสั่งงาน</li>
             <li>• สามารถค้นหาด้วยชื่องาน เลขที่งาน หรือคำสำคัญได้</li>
