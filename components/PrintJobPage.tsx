@@ -709,6 +709,19 @@ const getCurrentStageIndex = (): number => {
 
   const availableStages = getAvailableStages();
 
+  // Check if acceptJob button should be hidden
+  const shouldHideAcceptJob = (): boolean => {
+    if (!lead) return false;
+    
+    // Hide if stage is "การเงิน" (Finance)
+    if (lead.stage_id && lead.stage_id[1] === 'งานเก่า') return true;
+    
+    // Hide if lead name starts with numbers (000000-999999) indicating old system import
+    if (lead.name && /^\d{6}/.test(lead.name)) return true;
+    
+    return false;
+  };
+
   return (
     <div className="max-w-3xl mx-auto">
       {/* Top Header with Company Logo */}
@@ -814,7 +827,7 @@ const getCurrentStageIndex = (): number => {
           {/* Main content table */}
           <table className="w-full border-collapse">
             <tbody>
-              <tr className="hidden">
+              <tr className="">
                 <td className="py-1 px-2 text-gray-600 w-1/4 font-medium">ลูกค้า</td>
                 <td className="py-1 px-2 w-1/4">{lead.partner_id ? lead.partner_id[1] : "-"}</td>
                 <td className="py-1 px-2 text-gray-600 w-1/4 font-medium">ผู้รับงานปัจจุบัน</td>
@@ -1250,31 +1263,33 @@ const getCurrentStageIndex = (): number => {
       </Dialog>
 
       {/* Sticky Footer with Action Buttons */}
-      <div className="no-print fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 flex justify-between gap-4 z-50 shadow-lg">
-        <Button 
-          variant="outline" 
-          className={`flex-1 max-w-32 ${
-            isUserAccepted 
-              ? 'bg-green-100 border-green-300 text-green-800' 
-              : 'bg-green-50 border-green-200 text-green-700 hover:bg-green-100 hover:border-green-300'
-          } ${acceptingJob ? 'opacity-50' : ''}`}
-          onClick={() => setShowTeamModal(true)}
-          disabled={!lead || acceptingJob}
-        >
-          {acceptingJob ? (
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 border-2 border-green-600 border-t-transparent rounded-full animate-spin"></div>
-              <span className="text-xs">กำลังรับงาน...</span>
-            </div>
-          ) : isUserAccepted && currentUser ? (
-            <div className="flex flex-col items-center text-xs">
-              <span>✅ {currentUser.name}</span>
-              <span className="text-[10px] opacity-75">คลิกเพื่อเปลี่ยน</span>
-            </div>
-          ) : (
-            '🤝 รับงาน'
-          )}
-        </Button>
+      <div className={`no-print fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 flex gap-4 z-50 shadow-lg ${shouldHideAcceptJob() ? 'justify-end' : 'justify-between'}`}>
+        {!shouldHideAcceptJob() && (
+          <Button 
+            variant="outline" 
+            className={`flex-1 max-w-32 ${
+              isUserAccepted 
+                ? 'bg-green-100 border-green-300 text-green-800' 
+                : 'bg-green-50 border-green-200 text-green-700 hover:bg-green-100 hover:border-green-300'
+            } ${acceptingJob ? 'opacity-50' : ''}`}
+            onClick={() => setShowTeamModal(true)}
+            disabled={!lead || acceptingJob}
+          >
+            {acceptingJob ? (
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 border-2 border-green-600 border-t-transparent rounded-full animate-spin"></div>
+                <span className="text-xs">กำลังรับงาน...</span>
+              </div>
+            ) : isUserAccepted && currentUser ? (
+              <div className="flex flex-col items-center text-xs">
+                <span>✅ {currentUser.name}</span>
+                <span className="text-[10px] opacity-75">คลิกเพื่อเปลี่ยน</span>
+              </div>
+            ) : (
+              '🤝 รับงาน'
+            )}
+          </Button>
+        )}
         <Button 
           className="flex-1 max-w-32 bg-blue-600 hover:bg-blue-700 text-white"
           onClick={() => setShowStageModal(true)}
