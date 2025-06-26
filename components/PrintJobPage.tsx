@@ -1007,7 +1007,7 @@ const getCurrentStageIndex = (): number => {
                         >
                           ดูรายละเอียด
                         </a>
-                        <div className="text-xs text-gray-400">
+                        <div className="hidden text-xs text-gray-400">
                           {formatDate(relatedLead.create_date)}
                         </div>
                       </div>
