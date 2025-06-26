@@ -1292,6 +1292,7 @@ const getCurrentStageIndex = (): number => {
             )}
           </Button>
         )}
+        {!shouldHideAcceptJob() && (
         <Button 
           className="flex-1 max-w-32 bg-blue-600 hover:bg-blue-700 text-white"
           onClick={() => setShowStageModal(true)}
@@ -1299,6 +1300,7 @@ const getCurrentStageIndex = (): number => {
         >
           📤 ส่งงานไปยัง
         </Button>
+        )}
       </div>
     </div>
   );
