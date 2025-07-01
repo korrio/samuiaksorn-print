@@ -582,6 +582,17 @@ const getCurrentStageIndex = (): number => {
                   border: none !important;
                   box-shadow: none !important;
                 }
+                .related-lead-properties {
+                  grid-template-columns: repeat(3, 1fr) !important;
+                  gap: 4px !important;
+                  font-size: 8pt !important;
+                }
+                .related-lead-properties div {
+                  font-size: 8pt !important;
+                }
+                .related-lead-properties span {
+                  font-size: 8pt !important;
+                }
               }
             </style>
           </head>
@@ -932,11 +943,11 @@ const getCurrentStageIndex = (): number => {
         </Card>
         {/* Related Leads Card */}
       {getPropertyValueArray("c800637841b7aff1").length > 0 && (
-        <div className="mb-20 mt-5">
+        <div className="mb-20 mt-3">
           <Card className="p-0 max-w-3xl mx-auto shadow-none border-none card">
             <div className="">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+              <h3 className=" font-semibold text-gray-800 flex items-center gap-2">
                 <span className="text-xl">🔗</span>
                 งานที่เกี่ยวข้อง
               </h3>
@@ -968,17 +979,65 @@ const getCurrentStageIndex = (): number => {
                           </span>
                         </div>
                         
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
-                          <div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm related-lead-properties">
+                      {/*    <div>
                             <span className="text-gray-600">ลูกค้า:</span>
                             <span className="ml-1 font-medium">
                               {relatedLead.partner_id ? relatedLead.partner_id[1] : "-"}
                             </span>
-                          </div>
+                          </div>*/}
                           <div>
                             <span className="text-gray-600">ราคา:</span>
                             <span className="ml-1 font-medium">
                               {relatedLead.expected_revenue ? `${relatedLead.expected_revenue.toFixed(2)} บาท` : "-"}
+                            </span>
+                          </div>
+                          <div>
+                            <span className="text-gray-600">Job No.:</span>
+                            <span className="ml-1 font-medium">
+                              {getPropertyValueRelated(relatedLead, "2f9b502ecd32baca")}
+                            </span>
+                          </div>
+                          <div>
+                            <span className="text-gray-600">ช่างอาร์ต:</span>
+                            <span className="ml-1 font-medium">
+                              {getPropertyValueRelated(relatedLead, "cfa88ab31faaa9e3")}
+                            </span>
+                          </div>
+                          <div>
+                            <span className="text-gray-600">เครื่องพิมพ์:</span>
+                            <span className="ml-1 font-medium">
+                              {getPropertyValueRelated(relatedLead, "05545f6d64cf2f2e")}
+                            </span>
+                          </div>
+                          <div>
+                            <span className="text-gray-600">ช่างพิมพ์/ปริ้น:</span>
+                            <span className="ml-1 font-medium">
+                              {getPropertyValueRelated(relatedLead, "cfd03e83e1f2ad7b")}
+                            </span>
+                          </div>
+                          <div>
+                            <span className="text-gray-600">กระดาษ/วัสดุ:</span>
+                            <span className="ml-1 font-medium">
+                              {getPropertyValueRelated(relatedLead, "e695494263014454")}
+                            </span>
+                          </div>
+                          <div>
+                            <span className="text-gray-600">สีพิมพ์:</span>
+                            <span className="ml-1 font-medium">
+                              {getPropertyValueRelated(relatedLead, "2bd3d4bb377c3ec4")}
+                            </span>
+                          </div>
+                          <div>
+                            <span className="text-gray-600">ขนาดมาตรฐาน:</span>
+                            <span className="ml-1 font-medium">
+                              {getPropertyValueRelated(relatedLead, "5116658ff12262b5")}
+                            </span>
+                          </div>
+                          <div>
+                            <span className="text-gray-600">ขนาดระบุ:</span>
+                            <span className="ml-1 font-medium">
+                              {getPropertyValueRelated(relatedLead, "8995a01cd158af5e")}
                             </span>
                           </div>
                           <div>
@@ -994,9 +1053,45 @@ const getCurrentStageIndex = (): number => {
                             </span>
                           </div>
                           <div>
-                            <span className="text-gray-600">ช่างอาร์ต:</span>
+                            <span className="text-gray-600">เล่มที่:</span>
                             <span className="ml-1 font-medium">
-                              {getPropertyValueRelated(relatedLead, "cfa88ab31faaa9e3")}
+                              {getPropertyValueRelated(relatedLead, "1c1029ef80193852")}
+                            </span>
+                          </div>
+                          <div>
+                            <span className="text-gray-600">เลขที่ No.:</span>
+                            <span className="ml-1 font-medium">
+                              {getPropertyValueRelated(relatedLead, "be4eaaad4563df0f")}
+                            </span>
+                          </div>
+                          <div>
+                            <span className="text-gray-600">หลังพิมพ์:</span>
+                            <span className="ml-1 font-medium">
+                              {getPropertyValueRelated(relatedLead, "b480cd0a8f660acb")}
+                            </span>
+                          </div>
+                          <div>
+                            <span className="text-gray-600">จำนวนพิมพ์:</span>
+                            <span className="ml-1 font-medium">
+                              {getPropertyValueRelated(relatedLead, "c1454aabcb10809c")}
+                            </span>
+                          </div>
+                          <div>
+                            <span className="text-gray-600">ราคาต่อหน่วย:</span>
+                            <span className="ml-1 font-medium">
+                              {getPropertyValueRelated(relatedLead, "13915b99e3484da1")}
+                            </span>
+                          </div>
+                          <div>
+                            <span className="text-gray-600">Stock งาน:</span>
+                            <span className="ml-1 font-medium">
+                              {getPropertyValueRelated(relatedLead, "f97e8d714c4323ac")}
+                            </span>
+                          </div>
+                          <div>
+                            <span className="text-gray-600">Job PL / Job อาร์ตเก่า:</span>
+                            <span className="ml-1 font-medium">
+                              {getPropertyValueRelated(relatedLead, "a650bebd1ba8f7c2")}
                             </span>
                           </div>
                         </div>
