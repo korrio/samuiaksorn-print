@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import { Metadata } from 'next';
-import PrintJobPage from '@/components/PrintJobPage';
+import PrintJobPageV2 from '@/components/PrintJobPageV2';
 // import PrintJobPageMobile from '@/components/PrintJobPageMobile'; // Your mobile-optimized component
 import Loading from '@/components/Loading';
 import LeadSearch from '@/components/LeadSearch';
@@ -102,13 +102,13 @@ export default async function Page({ searchParams }: Props) {
       <Suspense fallback={<Loading />}>
         {/* Desktop Version - Hidden on mobile */}
         <div className="hidden md:block">
-          <PrintJobPage />
+          <PrintJobPageV2 />
         </div>
         
         {/* Mobile Version - Hidden on desktop */}
         <div className="block md:hidden">
           {/*<PrintJobPageMobile/>*/}
-          <PrintJobPage />
+          <PrintJobPageV2 />
         </div>
       </Suspense>
     </main>
