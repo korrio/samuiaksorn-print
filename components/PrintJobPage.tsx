@@ -949,7 +949,7 @@ const getCurrentStageIndex = (): number => {
             <div className="flex items-center justify-between mb-3">
               <h3 className=" font-semibold text-gray-800 flex items-center gap-2">
                 <span className="text-xl">🔗</span>
-                งานที่เกี่ยวข้อง
+                ข้อมูลเก่า
               </h3>
               <div className="text-sm text-gray-500">
                 {getPropertyValueArray("c800637841b7aff1").length} รายการ
