@@ -568,6 +568,27 @@ const getCurrentStageIndex = (): number => {
                 box-shadow: none !important;
                 border: none !important;
               }
+              /* Transform old job table to 4 columns */
+              .old-job-table-wrapper table {
+                display: block;
+              }
+              .old-job-table-wrapper tbody {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0;
+              }
+              .old-job-table-wrapper tr {
+                display: contents;
+              }
+              .old-job-table-wrapper td {
+                border: 1px solid #ddd !important;
+                padding: 2px 4px !important;
+                font-size: 10pt !important;
+              }
+              .old-job-table-wrapper td:first-child {
+                font-weight: 600;
+                background-color: #f9f9f9;
+              }
               @media print {
         .see-more {
         display: none;
@@ -600,6 +621,27 @@ const getCurrentStageIndex = (): number => {
                 }
                 .related-lead-properties span {
                   font-size: 8pt !important;
+                }
+                /* Transform old job table to 4 columns in print */
+                .old-job-table-wrapper table {
+                  display: block !important;
+                }
+                .old-job-table-wrapper tbody {
+                  display: grid !important;
+                  grid-template-columns: repeat(2, 1fr) !important;
+                  gap: 0 !important;
+                }
+                .old-job-table-wrapper tr {
+                  display: contents !important;
+                }
+                .old-job-table-wrapper td {
+                  border: 1px solid #ddd !important;
+                  padding: 2px 4px !important;
+                  font-size: 9pt !important;
+                }
+                .old-job-table-wrapper td:first-child {
+                  font-weight: 600 !important;
+                  background-color: #f9f9f9 !important;
                 }
               }
             </style>
@@ -987,29 +1029,19 @@ const getCurrentStageIndex = (): number => {
               <div className="grid gap-3">
                 {relatedLeads.map((relatedLead, index) => (
                   <div key={index} className="border border-gray-200 rounded-lg p-3 hover:bg-gray-50 transition-colors">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          
-                         
-
-                            
-{/*                          <span className="hidden text-sm text-gray-500">
-                            (ID: {relatedLead.id})
-                          </span>*/}
+                    {relatedLead.description ? (
+                    
+                        <div className="mt-3">
+                          <h3 className="text-gray-600 font-medium mb-1">รายละเอียด</h3>
+                          <hr className="mb-1" />
+                          <div id="old-job-table" className="old-job-table-wrapper" dangerouslySetInnerHTML={{ __html: relatedLead.description || '' }} />
                         </div>
-{/*                        <div>
-                          ลูกค้า: <span className="mr-10">{relatedLead.partner_id ? relatedLead.partner_id[1] : "-"}</span>
-                            งาน: <a 
-                            href={`?id=${relatedLead.id}`}
-                            className=""
-                          >
-                            {relatedLead.originalName || relatedLead.name}
-                          </a>
-                        </div>*/}
-                        
+                    ) : (
+                      <div>
+                        <div id="related-main" className="flex items-start justify-between">
+                      <div className="flex-1">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm related-lead-properties">
-                          
+
                           <div>
                              <span className="text-gray-600 text-xl">JOB NO:</span>
                             <span className="ml-1 font-medium text-xl">
@@ -1028,18 +1060,6 @@ const getCurrentStageIndex = (): number => {
                               {relatedLead.partner_id ? relatedLead.partner_id[1] : "-"}
                             </span>
                           </div>
-{/*                          <div>
-                            <span className="text-gray-600">ราคา:</span>
-                            <span className="ml-1 font-medium">
-                              {relatedLead.expected_revenue ? `${relatedLead.expected_revenue.toFixed(2)} บาท` : "-"}
-                            </span>
-                          </div>*/}
-                          {/*<div>*/}
-{/*                            <span className="text-gray-600">Job No.:</span>
-                            <span className="ml-1 font-medium">
-                              {getPropertyValueRelated(relatedLead, "2f9b502ecd32baca")}
-                            </span>
-                          </div>*/}
                           <div>
                             <span className="text-gray-600">เครื่องพิมพ์:</span>
                             <span className="ml-1 font-medium">
@@ -1157,6 +1177,8 @@ const getCurrentStageIndex = (): number => {
                         </div>
                       </div>
                     </div>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
