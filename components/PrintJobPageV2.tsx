@@ -848,7 +848,7 @@ const getCurrentStageIndex = (): number => {
 
           {/* Main content table */}
           {!shouldHideAcceptJob() && (
-            <table className="w-full border-collapse" style={{"margin-top":"-15px"}}>
+            <table className="w-full border-collapse" style={{marginTop:"-15px"}}>
               <tbody>
                 <tr className="">
                   <td className="py-1 px-2 text-gray-600 w-1/9 font-medium">ชื่อลูกค้า</td>
