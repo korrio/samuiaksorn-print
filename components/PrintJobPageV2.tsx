@@ -128,6 +128,11 @@ interface DialogTitleProps {
   children: React.ReactNode;
 }
 
+interface TableData {
+  label: string;
+  value: string;
+}
+
 export default function PrintJobPage() {
 	const printRef = useRef<HTMLDivElement>(null);
   const searchParams = useSearchParams();
@@ -568,26 +573,17 @@ const getCurrentStageIndex = (): number => {
                 box-shadow: none !important;
                 border: none !important;
               }
-              /* Transform old job table to 4 columns */
-              .old-job-table-wrapper table {
-                display: block;
+              /* Old job table grid layout */
+              #old-job-table {
+                display: grid !important;
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 2px !important;
               }
-              .old-job-table-wrapper tbody {
-                display: grid;
-                grid-template-columns: repeat(2, 1fr);
-                gap: 0;
-              }
-              .old-job-table-wrapper tr {
-                display: contents;
-              }
-              .old-job-table-wrapper td {
-                border: 1px solid #ddd !important;
-                padding: 2px 4px !important;
+              #old-job-table > div {
                 font-size: 10pt !important;
               }
-              .old-job-table-wrapper td:first-child {
-                font-weight: 600;
-                background-color: #f9f9f9;
+              #old-job-table .bg-gray-50 {
+                background-color: #f9f9f9 !important;
               }
               @media print {
         .see-more {
@@ -622,26 +618,21 @@ const getCurrentStageIndex = (): number => {
                 .related-lead-properties span {
                   font-size: 8pt !important;
                 }
-                /* Transform old job table to 4 columns in print */
-                .old-job-table-wrapper table {
-                  display: block !important;
-                }
-                .old-job-table-wrapper tbody {
+                /* Old job table grid layout in print */
+                #old-job-table {
                   display: grid !important;
                   grid-template-columns: repeat(2, 1fr) !important;
-                  gap: 0 !important;
+                  gap: 1px !important;
                 }
-                .old-job-table-wrapper tr {
-                  display: contents !important;
+                #old-job-table > div {
+                  font-size: 8pt !important;
                 }
-                .old-job-table-wrapper td {
-                  border: 1px solid #ddd !important;
-                  padding: 2px 4px !important;
-                  font-size: 9pt !important;
+                #old-job-table > div > div {
+                  padding: 1px 3px !important;
+                  font-size: 8pt !important;
                 }
-                .old-job-table-wrapper td:first-child {
-                  font-weight: 600 !important;
-                  background-color: #f9f9f9 !important;
+                #old-job-table .min-w-\\[100px\\] {
+                  min-width: 80px !important;
                 }
               }
             </style>
@@ -710,6 +701,38 @@ const getCurrentStageIndex = (): number => {
     if (!prop || !prop.value || !Array.isArray(prop.value)) return [];
     
     return prop.value;
+  };
+
+  // Parse HTML table to JSON
+  const parseTableToJSON = (htmlString: string): TableData[] => {
+    if (!htmlString) return [];
+    
+    try {
+      // Create a temporary DOM element to parse the HTML
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(htmlString, 'text/html');
+      const table = doc.querySelector('table');
+      
+      if (!table) return [];
+      
+      const rows = table.querySelectorAll('tr');
+      const data: TableData[] = [];
+      
+      rows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        if (cells.length >= 2) {
+          // Remove <strong> tags and clean up the label
+          const label = cells[0].textContent?.replace(/[:\s]+$/, '').trim() || '';
+          const value = cells[1].textContent?.trim() || '';
+          data.push({ label, value });
+        }
+      });
+      
+      return data;
+    } catch (error) {
+      console.error('Error parsing table HTML:', error);
+      return [];
+    }
   };
 
   // Format date
@@ -1027,14 +1050,30 @@ const getCurrentStageIndex = (): number => {
               </div>
             ) : relatedLeads.length > 0 ? (
               <div className="grid gap-3">
-                {relatedLeads.map((relatedLead, index) => (
+                {relatedLeads.map((relatedLead, index) => {
+                  const tableData = relatedLead.description ? parseTableToJSON(relatedLead.description) : [];
+                  
+                  return (
                   <div key={index} className="border border-gray-200 rounded-lg p-3 hover:bg-gray-50 transition-colors">
-                    {relatedLead.description ? (
+                    {relatedLead.description && tableData.length > 0 ? (
                     
-                        <div className="mt-3">
-                          <h3 className="text-gray-600 font-medium mb-1">รายละเอียด</h3>
-                          <hr className="mb-1" />
-                          <div id="old-job-table" className="old-job-table-wrapper" dangerouslySetInnerHTML={{ __html: relatedLead.description || '' }} />
+                        <div className="">
+                          {/*<h3 className="text-gray-600 font-medium mb-1">รายละเอียด</h3>*/}
+                          {/*<hr className="mb-1" />*/}
+                          <div id="old-job-table" className="grid grid-cols-2 gap-1 text-sm">
+                            {tableData
+                              .filter(item => item.label !== 'CODE')
+                              .map((item, idx) => (
+                              <div key={idx} className="flex border border-gray-200">
+                                <div className="bg-gray-50 px-2 py-1 font-medium text-gray-700 border-r border-gray-200 min-w-[100px]">
+                                  {item.label}:
+                                </div>
+                                <div className="px-2 py-1 flex-1">
+                                  {item.value}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
                         </div>
                     ) : (
                       <div>
@@ -1180,7 +1219,8 @@ const getCurrentStageIndex = (): number => {
                       </div>
                     )}
                   </div>
-                ))}
+                  );
+                })}
               </div>
             ) : (
               <div className="text-center py-4 text-gray-500">
