@@ -635,15 +635,6 @@ const getCurrentStageIndex = (): number => {
                 #old-job-table .min-w-\\[100px\\] {
                   min-width: 80px !important;
                 }
-                /* Hide select during print and show only value */
-                select {
-                  appearance: none !important;
-                  -webkit-appearance: none !important;
-                  -moz-appearance: none !important;
-                  border: none !important;
-                  background: none !important;
-                  font-size: 10pt !important;
-                }
               }
             </style>
           </head>
@@ -1030,11 +1021,14 @@ const getCurrentStageIndex = (): number => {
                   <td className="py-1 px-2">{getPropertyValue("781a8e4050b75ea0")}</td>*/}
                   <td className="py-1 px-2 text-gray-600 font-medium">เครื่องพิมพ์</td>
                   <td className="py-1 px-2">
+                    {/* Show plain text for print */}
+                    <span className="hidden print:inline">{getPropertyValue("05545f6d64cf2f2e")}</span>
+                    {/* Show select dropdown for screen */}
                     <select
                       value={lead.lead_properties.find(p => p.name === "05545f6d64cf2f2e")?.value || ""}
                       onChange={(e) => updatePrinter(e.target.value)}
                       disabled={updatingPrinter}
-                      className="w-full px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="print:hidden w-full px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <option value="">เลือกเครื่องพิมพ์</option>
                       {printerOptions.map(([value, label]) => (
