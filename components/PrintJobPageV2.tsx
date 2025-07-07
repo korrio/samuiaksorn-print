@@ -156,6 +156,7 @@ export default function PrintJobPage() {
   const [acceptingJob, setAcceptingJob] = useState(false);
   const [relatedLeads, setRelatedLeads] = useState<any[]>([]);
   const [loadingRelatedLeads, setLoadingRelatedLeads] = useState(false);
+  const [updatingPrinter, setUpdatingPrinter] = useState(false);
   
   console.log("job",jobNo)
   
@@ -634,6 +635,15 @@ const getCurrentStageIndex = (): number => {
                 #old-job-table .min-w-\\[100px\\] {
                   min-width: 80px !important;
                 }
+                /* Hide select during print and show only value */
+                select {
+                  appearance: none !important;
+                  -webkit-appearance: none !important;
+                  -moz-appearance: none !important;
+                  border: none !important;
+                  background: none !important;
+                  font-size: 10pt !important;
+                }
               }
             </style>
           </head>
@@ -765,6 +775,76 @@ const getCurrentStageIndex = (): number => {
     if (hours < 24) return 'text-yellow-600';
     if (hours < 72) return 'text-orange-600';
     return 'text-red-600';
+  };
+
+  // Printer options
+  const printerOptions: [string, string][] = [
+    ["1560d47cac788f59", "Inkjet"],
+    ["80b87c656e37c167", "Digital"],
+    ["c588331bc01fdbff", "MO4"],
+    ["fd80d9558d466b1c", "MO2"],
+    ["8b7e8e869a55923a", "GTO4"],
+    ["49a0c443f741b937", "GTO1"],
+    ["d77f4a0bdfab4425", "ตัด5"],
+    ["7ee942b9d6bd36bd", "ตัด11"],
+    ["3a2210f769b3c9b2", "GTO4 + GTO1"],
+    ["a19263830542e45e", "บริการอื่นๆ"],
+    ["bd815ee130b43027", "Digital + GTO1"],
+    ["8fa49d4472335171", "MO4 + Digital"]
+  ];
+
+  // Update printer
+  const updatePrinter = async (printerId: string): Promise<void> => {
+    if (!lead) return;
+    
+    setUpdatingPrinter(true);
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/crm.lead/${lead.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          lead_properties: [
+            {
+              name: "05545f6d64cf2f2e",
+              value: printerId
+            }
+          ]
+        })
+      });
+
+      if (response.ok) {
+        // Refresh lead data
+        if (refetch) {
+          await refetch();
+        }
+        
+        // Show success message
+        await Swal.fire({
+          title: 'สำเร็จ!',
+          text: 'อัปเดตเครื่องพิมพ์เรียบร้อยแล้ว',
+          icon: 'success',
+          confirmButtonText: 'ตกลง',
+          confirmButtonColor: '#10b981',
+          timer: 1500,
+          timerProgressBar: true
+        });
+      } else {
+        throw new Error('Failed to update printer');
+      }
+    } catch (error) {
+      console.error('Error updating printer:', error);
+      await Swal.fire({
+        title: 'เกิดข้อผิดพลาด!',
+        text: 'เกิดข้อผิดพลาดในการอัปเดตเครื่องพิมพ์',
+        icon: 'error',
+        confirmButtonText: 'ตกลง',
+        confirmButtonColor: '#ef4444'
+      });
+    } finally {
+      setUpdatingPrinter(false);
+    }
   };
 
   if (isLoading) {
@@ -949,7 +1029,21 @@ const getCurrentStageIndex = (): number => {
                   {/*<td className="py-1 px-2 text-gray-600 font-medium">รหัสลูกค้า</td>
                   <td className="py-1 px-2">{getPropertyValue("781a8e4050b75ea0")}</td>*/}
                   <td className="py-1 px-2 text-gray-600 font-medium">เครื่องพิมพ์</td>
-                  <td className="py-1 px-2">{getPropertyValue("05545f6d64cf2f2e")}</td>
+                  <td className="py-1 px-2">
+                    <select
+                      value={lead.lead_properties.find(p => p.name === "05545f6d64cf2f2e")?.value || ""}
+                      onChange={(e) => updatePrinter(e.target.value)}
+                      disabled={updatingPrinter}
+                      className="w-full px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <option value="">เลือกเครื่องพิมพ์</option>
+                      {printerOptions.map(([value, label]) => (
+                        <option key={value} value={value}>
+                          {label}
+                        </option>
+                      ))}
+                    </select>
+                  </td>
                   <td className="py-1 px-2 text-gray-600 font-medium">ช่างอาร์ต</td>
                   <td className="py-1 px-2">{getPropertyValue("cfa88ab31faaa9e3")}</td>
                 </tr>
