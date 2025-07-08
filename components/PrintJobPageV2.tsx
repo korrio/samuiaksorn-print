@@ -1093,8 +1093,8 @@ const getCurrentStageIndex = (): number => {
                   <td className="py-1 px-2">{getPropertyValue("1e1a2c1139e73a55")}</td>*/}
                 </tr>
                 <tr>
-{/*                  <td className="py-1 px-2 text-gray-600 font-medium">Stock งาน</td>
-                  <td className="py-1 px-2">{getPropertyValue("f97e8d714c4323ac")}</td>*/}
+                  <td className="py-1 px-2 text-gray-600 font-medium">จำนวนหน้า/เล่ม</td>
+                  <td className="py-1 px-2">{getPropertyValue("eb1bdca381cad707")}</td>
                   <td className="py-1 px-2 text-gray-600 font-medium">Job PL/อาร์ตเก่า</td>
                   <td className="py-1 px-2">{getPropertyValue("a650bebd1ba8f7c2")}</td>
                 </tr>
