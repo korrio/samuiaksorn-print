@@ -1225,12 +1225,12 @@ const getCurrentStageIndex = (): number => {
                               {getPropertyValueRelated(relatedLead, "be4eaaad4563df0f")}
                             </span>
                           </div>
-                          <div>
+                          {/*<div>
                             <span className="text-gray-600">ขนาดมาตรฐาน:</span>
                             <span className="ml-1 font-medium">
                               {getPropertyValueRelated(relatedLead, "5116658ff12262b5")}
                             </span>
-                          </div>
+                          </div>*/}
                           <div>
                             <span className="text-gray-600">ขนาดระบุ:</span>
                             <span className="ml-1 font-medium">
@@ -1255,12 +1255,12 @@ const getCurrentStageIndex = (): number => {
                               {getPropertyValueRelated(relatedLead, "1f90378ffeb5b087")}
                             </span>
                           </div>
-                          <div>
+                          {/*<div>
                             <span className="text-gray-600">ลำดับกระดาษ:</span>
                             <span className="ml-1 font-medium">
                               {getPropertyValueRelated(relatedLead, "d788801775fe4bf4")}
                             </span>
-                          </div>
+                          </div>*/}
                           <div>
                             <span className="text-gray-600">จำนวนพิมพ์:</span>
                             <span className="ml-1 font-medium">
