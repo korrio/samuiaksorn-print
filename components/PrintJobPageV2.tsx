@@ -485,7 +485,7 @@ const getCurrentStageIndex = (): number => {
               value: userId
             }
           ],
-          // user_id: userId
+          user_id: userId
         })
       });
 
@@ -1048,20 +1048,22 @@ const getCurrentStageIndex = (): number => {
                   <td className="py-1 px-2">{getPropertyValue("cfd03e83e1f2ad7b")}</td>
                 </tr>
                 <tr>
-                  <td className="py-1 px-2 text-gray-600 font-medium">ขนาดมาตรฐาน</td>
-                  <td className="py-1 px-2">{getPropertyValue("5116658ff12262b5")}</td>
+                  {/*<td className="py-1 px-2 text-gray-600 font-medium">ขนาดมาตรฐาน</td>
+                  <td className="py-1 px-2">{getPropertyValue("5116658ff12262b5")}</td>*/}
                   <td className="py-1 px-2 text-gray-600 font-medium">สีพิมพ์</td>
-                  <td className="py-1 px-2">{getPropertyValue("2bd3d4bb377c3ec4")}</td>
+                  <td className="py-1 px-2">{getPropertyValue("1f90378ffeb5b087")}</td>
+                  <td className="py-1 px-2 text-gray-600 font-medium">ขนาดระบุ</td>
+                  <td className="py-1 px-2">{getPropertyValue("8995a01cd158af5e")}</td>
                 </tr>
                 <tr className="hidden">
                   
                   
                 </tr>
                 <tr>
-                  <td className="py-1 px-2 text-gray-600 font-medium">จำนวนใบ/ชุด</td>
-                  <td className="py-1 px-2">{getPropertyValue("a1c403ebe63df23d")}</td>
-                  <td className="py-1 px-2 text-gray-600 font-medium">ขนาดระบุ</td>
-                  <td className="py-1 px-2">{getPropertyValue("8995a01cd158af5e")}</td>
+                  {/*<td className="py-1 px-2 text-gray-600 font-medium">จำนวนใบ/ชุด</td>
+                  <td className="py-1 px-2">{getPropertyValue("a1c403ebe63df23d")}</td>*/}
+                  {/*<td className="py-1 px-2 text-gray-600 font-medium">ขนาดระบุ</td>
+                  <td className="py-1 px-2">{getPropertyValue("8995a01cd158af5e")}</td>*/}
                   
                 </tr>
                 <tr>
@@ -1242,9 +1244,15 @@ const getCurrentStageIndex = (): number => {
                             </span>
                           </div>
                           <div>
-                            <span className="text-gray-600">สีพิมพ์:</span>
+                            <span className="text-gray-600">สีพิมพ์ (เก่า):</span>
                             <span className="ml-1 font-medium">
                               {getPropertyValueRelated(relatedLead, "2bd3d4bb377c3ec4")}
+                            </span>
+                          </div>
+                          <div>
+                            <span className="text-gray-600">สีพิมพ์:</span>
+                            <span className="ml-1 font-medium">
+                              {getPropertyValueRelated(relatedLead, "1f90378ffeb5b087")}
                             </span>
                           </div>
                           <div>
