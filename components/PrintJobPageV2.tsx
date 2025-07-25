@@ -1250,7 +1250,7 @@ const getCurrentStageIndex = (): number => {
                             </span>
                           </div>
                           <div>
-                            <span className="text-gray-600">สีพิมพ์:</span>
+                            <span className="text-gray-600">สีพิมพ์ (ใหม่):</span>
                             <span className="ml-1 font-medium">
                               {getPropertyValueRelated(relatedLead, "1f90378ffeb5b087")}
                             </span>
