@@ -485,7 +485,7 @@ const getCurrentStageIndex = (): number => {
               value: userId
             }
           ],
-          user_id: userId
+          // user_id: userId
         })
       });
 
