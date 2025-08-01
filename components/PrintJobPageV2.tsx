@@ -1593,6 +1593,23 @@ const getCurrentStageIndex = (): number => {
             )}
           </Button>
         )}
+        <Button 
+          variant="outline" 
+          className="flex-1 max-w-24 bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100 hover:border-gray-300"
+          onClick={() => {
+            // Clear all cookies
+            document.cookie.split(";").forEach(function(c) { 
+              document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+            });
+            // Clear localStorage and sessionStorage
+            localStorage.clear();
+            sessionStorage.clear();
+            // Force reload
+            window.location.reload();
+          }}
+        >
+          🔄 Refresh
+        </Button>
         {!shouldHideAcceptJob() && (
         <Button 
           className="flex-1 max-w-32 bg-blue-600 hover:bg-blue-700 text-white"
