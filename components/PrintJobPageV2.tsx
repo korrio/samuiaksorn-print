@@ -847,18 +847,83 @@ const getCurrentStageIndex = (): number => {
   }
 
   if (error) {
+    const is404Error = error.message.includes('No lead found') || 
+                       error.message.includes('404') ||
+                       error.message.includes('not found');
+    
     return (
-      <Card className="p-6 max-w-3xl mx-auto">
-        <div className="text-center text-red-500">Error loading lead: {error.message}</div>
-      </Card>
+      <div className="max-w-3xl mx-auto">
+        <Card className="p-8 text-center">
+          <div className="mb-6">
+            <div className="text-6xl mb-4">
+              {is404Error ? '🔍' : '❌'}
+            </div>
+            <h1 className="text-2xl font-bold text-gray-800 mb-2">
+              {is404Error ? 'ไม่พบใบสั่งงาน' : 'เกิดข้อผิดพลาด'}
+            </h1>
+            <p className="text-gray-600 mb-4">
+              {is404Error 
+                ? `ไม่พบใบสั่งงานที่ต้องการ ${id ? `(ID: ${id})` : jobNo ? `(Job No: ${jobNo})` : ''}`
+                : `เกิดข้อผิดพลาดในการโหลดข้อมูล: ${error.message}`
+              }
+            </p>
+          </div>
+          
+          <div className="space-y-3">
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Button
+                variant="outline"
+                onClick={() => router.push('/')}
+                className="bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100 hover:border-blue-300"
+              >
+                🔍 ค้นหาใบสั่งงานใหม่
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  if (refetch) refetch();
+                }}
+                className="bg-green-50 border-green-200 text-green-700 hover:bg-green-100 hover:border-green-300"
+              >
+                🔄 ลองใหม่อีกครั้ง
+              </Button>
+            </div>
+            
+            {is404Error && (
+              <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-left">
+                <h3 className="font-medium text-yellow-800 mb-2">💡 คำแนะนำ:</h3>
+                <ul className="text-sm text-yellow-700 space-y-1">
+                  <li>• ตรวจสอบว่า Job Number หรือ ID ถูกต้อง</li>
+                  <li>• ลองค้นหาด้วยชื่องานหรือชื่อลูกค้าแทน</li>
+                  <li>• ติดต่อฝ่ายประสานงานหากยังไม่พบข้อมูล</li>
+                </ul>
+              </div>
+            )}
+          </div>
+        </Card>
+      </div>
     );
   }
 
   if (!lead) {
     return (
-      <Card className="p-6 max-w-3xl mx-auto">
-        <div className="text-center text-gray-500">No data available</div>
-      </Card>
+      <div className="max-w-3xl mx-auto">
+        <Card className="p-8 text-center">
+          <div className="mb-6">
+            <div className="text-6xl mb-4">📋</div>
+            <h1 className="text-2xl font-bold text-gray-800 mb-2">ไม่มีข้อมูล</h1>
+            <p className="text-gray-600 mb-4">ไม่พบข้อมูลใบสั่งงานที่ต้องการ</p>
+          </div>
+          
+          <Button
+            variant="outline"
+            onClick={() => router.push('/')}
+            className="bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100 hover:border-blue-300"
+          >
+            🔍 ค้นหาใบสั่งงานใหม่
+          </Button>
+        </Card>
+      </div>
     );
   }
 
