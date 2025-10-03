@@ -352,6 +352,11 @@ export default function PrintJobPage() {
     }
   };
 
+  // Remove related lead from frontend display (for printing purposes)
+  const removeRelatedLead = (leadIndex: number) => {
+    setRelatedLeads(prevLeads => prevLeads.filter((_, index) => index !== leadIndex));
+  };
+
   // Stage emoji mapping
   const getStageEmoji = (stageName: string): string => {
     const emojiMap: Record<string, string> = {
@@ -1214,10 +1219,18 @@ const getCurrentStageIndex = (): number => {
                   const tableData = relatedLead.description ? parseTableToJSON(relatedLead.description) : [];
                   
                   return (
-                  <div key={index} className="border border-gray-200 rounded-lg p-3 hover:bg-gray-50 transition-colors">
+                  <div key={index} className="border border-gray-200 rounded-lg p-3 hover:bg-gray-50 transition-colors relative">
                     {relatedLead.description && tableData.length > 0 ? (
                     
                         <div className="">
+                          {/* Delete button for table format */}
+                          <button
+                            onClick={() => removeRelatedLead(index)}
+                            className="no-print absolute top-2 right-2 text-xs bg-red-100 text-red-700 px-2 py-1 rounded hover:bg-red-200 transition-colors"
+                            title="ลบออกจากการแสดงผล (สำหรับการพิมพ์)"
+                          >
+                            🗑️ ลบ
+                          </button>
                           {/*<h3 className="text-gray-600 font-medium mb-1">รายละเอียด</h3>*/}
                           {/*<hr className="mb-1" />*/}
                           <div id="old-job-table" className="grid grid-cols-2 gap-1 text-sm">
@@ -1372,10 +1385,17 @@ const getCurrentStageIndex = (): number => {
                       <div className="flex flex-col gap-1 ml-4">
                         <a 
                           href={`?id=${relatedLead.id}`}
-                          className="see-more text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded hover:bg-blue-200 transition-colors"
+                          className="see-more text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded hover:bg-blue-200 transition-colors text-center"
                         >
                           ดูรายละเอียด
                         </a>
+                        <button
+                          onClick={() => removeRelatedLead(index)}
+                          className="no-print text-xs bg-red-100 text-red-700 px-2 py-1 rounded hover:bg-red-200 transition-colors"
+                          title="ลบออกจากการแสดงผล (สำหรับการพิมพ์)"
+                        >
+                          🗑️ ลบ
+                        </button>
                         <div className=" text-xs text-gray-400">
                           วันที่เปิดงาน: <br/>
                           {formatDate(relatedLead.create_date)}
