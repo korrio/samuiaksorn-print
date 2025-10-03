@@ -14,6 +14,7 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import QrCodeGenerator from '@/components/QrCodeGenerator';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Swal from 'sweetalert2';
+import axios from 'axios';
 
 // Types
 interface Stage {
@@ -186,10 +187,24 @@ export default function PrintJobPage() {
 
   // Fetch related leads when lead data is available
   useEffect(() => {
+    console.log("useEffect triggered - lead:", !!lead, "relatedLeads.length:", relatedLeads.length);
     if (lead && relatedLeads.length === 0) {
       const relatedLeadIds = getPropertyValueArray("c800637841b7aff1");
+      console.log("relatedLeadIds from property:", relatedLeadIds);
       if (relatedLeadIds.length > 0) {
+        console.log("Fetching direct related leads");
         fetchRelatedLeads(relatedLeadIds);
+      } else {
+        // Fallback: load related leads from the same customer with similar name
+        console.log("No direct related leads, trying fallback");
+        console.log("lead.partner_id:", lead.partner_id);
+        if (lead.partner_id && Array.isArray(lead.partner_id)) {
+          const partnerId = lead.partner_id[0];
+          console.log("Fetching related leads by partner:", partnerId, "name:", lead.name);
+          fetchRelatedLeadsByPartner(partnerId, lead.name);
+        } else {
+          console.log("No partner_id available for fallback");
+        }
       }
     }
   }, [lead, relatedLeads.length]);
@@ -250,65 +265,6 @@ export default function PrintJobPage() {
     try {
       const response = await fetch(`https://erpsamuiaksorn.com/api/crm/lead/${lead.id}/timeline`);
       const result: TimelineResponse = await response.json();
-
-//       const result: TimelineResponse = {
-// "error": false,
-// "message": "Timeline retrieved for lead N2385 ตรายางหมึกใน",
-// "timestamp": "2025-06-19T16:00:49",
-// "data": {
-// "lead_info": {
-// "id": 3212,
-// "name": "N2385 ตรายางหมึกใน",
-// "partner_name": "Happy Doggo",
-// "email_from": false,
-// "phone": false,
-// "user_id": "กร",
-// "team_id": "ประสานงาน",
-// "create_date": "2025-05-27 08:18:42.901240",
-// "expected_revenue": 600
-// },
-// "current_status": {
-// "current_stage": "เสนอราคา",
-// "current_stage_duration_hours": 1.1905555555555556,
-// "current_stage_days": 0,
-// "is_overdue": false,
-// "last_activity_date": "2025-06-19 14:44:26",
-// "days_since_last_activity": 0
-// },
-// "timeline": [
-// {
-// "date": "2025-06-19 14:44:26",
-// "stage_from": "เสนอราคา",
-// "stage_to": "ออกแบบ",
-// "duration": 0.015277777777777777,
-// "duration_days": 0.000636574074074074,
-// "user": "กร"
-// },
-// {
-// "date": "2025-06-19 14:46:22",
-// "stage_from": "ออกแบบ",
-// "stage_to": "ตัดก่อนพิมพ์",
-// "duration": 0.03222222222222222,
-// "duration_days": 0.0013425925925925925,
-// "user": "กร"
-// },
-// {
-// "date": "2025-06-19 14:49:23",
-// "stage_from": "ตัดก่อนพิมพ์",
-// "stage_to": "เสนอราคา",
-// "duration": 0.050277777777777775,
-// "duration_days": 0.0020949074074074073,
-// "user": "กร"
-// }
-// ],
-// "statistics": {
-// "total_stages": 3,
-// "total_duration_hours": 1.2883333333333333,
-// "total_duration_days": 0.05368055555555556,
-// "average_stage_duration": 0.42944444444444446
-// }
-// }
-// }
       
       if (!result.error) {
         setTimeline(result.data);
@@ -345,6 +301,52 @@ export default function PrintJobPage() {
       setRelatedLeads(validLeads);
     } catch (error) {
       console.error('Error fetching related leads:', error);
+    } finally {
+      setLoadingRelatedLeads(false);
+    }
+  };
+
+  // Fetch related leads by partner_id when no direct related leads exist
+  const fetchRelatedLeadsByPartner = async (partnerId: number, leadName: string) => {
+    console.log("fetchRelatedLeadsByPartner called with:", { partnerId, leadName, currentLeadId: lead?.id });
+    setLoadingRelatedLeads(true);
+    try {
+      const query = leadName.slice(7, 10); // Use first 10 characters of lead name as query
+      console.log(":::",query)
+      const domain = JSON.stringify([
+        "&",
+        ["partner_id", "=", partnerId],
+        ["name", "ilike", query.trim()],
+        ["id", "!=", lead?.id], // Exclude current lead
+      ]);
+      const fields = JSON.stringify(["id","name"]);
+      // const order = JSON.stringify([["create_date", "desc"]]);
+      const order = "create_date desc";
+      const url = `${process.env.NEXT_PUBLIC_API_URL}/api/crm.lead?domain=${encodeURIComponent(domain)}&fields=${encodeURIComponent(fields)}&order=${encodeURIComponent(order)}&limit=3`;
+      console.log("Fetching URL:", url);
+      const response = await fetch(url);
+      const result = await response.json();
+
+      console.log("API response:", result);
+      console.log("result.data:",result.data)
+
+      if (result && result.success && result.data && result.data.length > 0) {
+        // Convert search results to relatedLeadIds format [number, string][]
+        const foundRelatedLeadIds: [number, string][] = result.data.map((leadData: any) => [
+          leadData.id,
+          leadData.name
+        ]);
+
+        console.log("foundRelatedLeadIds",foundRelatedLeadIds)
+        
+        // Use the existing fetchRelatedLeads function
+        await fetchRelatedLeads(foundRelatedLeadIds);
+      } else {
+        setRelatedLeads([]);
+      }
+    } catch (error) {
+      console.error('Error fetching related leads by partner:', error);
+      setRelatedLeads([]);
     } finally {
       setLoadingRelatedLeads(false);
     }
@@ -1184,7 +1186,7 @@ const getCurrentStageIndex = (): number => {
           )}
         </Card>
         {/* Related Leads Card */}
-      {getPropertyValueArray("c800637841b7aff1").length > 0 && (
+      {(getPropertyValueArray("c800637841b7aff1").length > 0 || relatedLeads.length > 0) && (
         <div className="mb-20 mt-3">
           <Card className="p-0 max-w-3xl mx-auto shadow-none border-none card">
             <div className="">
@@ -1194,7 +1196,10 @@ const getCurrentStageIndex = (): number => {
                 ข้อมูลเก่า
               </h3>
               <div className="text-sm text-gray-500">
-                {getPropertyValueArray("c800637841b7aff1").length} รายการ
+                {getPropertyValueArray("c800637841b7aff1").length > 0 
+                  ? `${getPropertyValueArray("c800637841b7aff1").length} รายการ`
+                  : `${relatedLeads.length} รายการ (จากลูกค้าเดียวกัน)`
+                }
               </div>
             </div>
             
