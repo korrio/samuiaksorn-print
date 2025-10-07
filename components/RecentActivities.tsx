@@ -62,22 +62,38 @@ interface ApiResponse {
   };
 }
 
-const RecentActivities = () => {
+interface RecentActivitiesProps {
+  partnerId?: string | number;
+  limit?: number;
+}
+
+const RecentActivities = ({ partnerId, limit = 10 }: RecentActivitiesProps) => {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(true);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchActivities = async () => {
       try {
-        // let data: ApiResponse;
-        // const response = await fetch('https://erpsamuiaksorn.com/api/crm/activities/recent');
-        // if (!response.ok) {
-        //   throw new Error('Failed to fetch activities');
-        // }
-        // data = await response.json();
-
-        const data: ApiResponse = {
+        const url = partnerId 
+          ? `https://dashboard-api.erpsamuiaksorn.com/api/crm/activities/recent?partner_id=${partnerId}&limit=${limit}`
+          : `https://dashboard-api.erpsamuiaksorn.com/api/crm/activities/recent?limit=${limit}`;
+          
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error('Failed to fetch activities');
+        }
+        const data: ApiResponse = await response.json();
+        
+        if (data.error) {
+          throw new Error(data.message);
+        }
+        setActivities(data.data.activities);
+      } catch (err) {
+        console.error('Error fetching recent activities:', err);
+        // Use mockup data when API fails
+        const mockData: ApiResponse = {
 "error": false,
 "message": "Retrieved 10 recent activities",
 "timestamp": "2025-06-20T15:15:41+07:00",
@@ -305,19 +321,14 @@ const RecentActivities = () => {
 }
 }
 }
-        if (data.error) {
-          throw new Error(data.message);
-        }
-        setActivities(data.data.activities);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
+        setActivities(mockData.data.activities);
       } finally {
         setLoading(false);
       }
     };
 
     fetchActivities();
-  }, []);
+  }, [partnerId, limit]);
 
   const formatTimestamp = (timestamp: string) => {
     // Parse ISO 8601 timestamp with timezone (e.g., "2025-06-20T11:11:24+07:00")
