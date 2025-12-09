@@ -298,7 +298,13 @@ export default function PrintJobPage() {
 
       const fetchedLeads = await Promise.all(leadPromises);
       const validLeads = fetchedLeads.filter(lead => lead !== null);
-      setRelatedLeads(validLeads);
+
+      // Filter out deleted related leads from localStorage
+      const storageKey = `deletedRelatedLeads_${lead?.id}`;
+      const deletedIds = JSON.parse(localStorage.getItem(storageKey) || '[]');
+      const filteredLeads = validLeads.filter(lead => !deletedIds.includes(lead.id));
+
+      setRelatedLeads(filteredLeads);
     } catch (error) {
       console.error('Error fetching related leads:', error);
     } finally {
@@ -338,7 +344,7 @@ export default function PrintJobPage() {
         ]);
 
         console.log("foundRelatedLeadIds",foundRelatedLeadIds)
-        
+
         // Use the existing fetchRelatedLeads function
         await fetchRelatedLeads(foundRelatedLeadIds);
       } else {
@@ -352,8 +358,28 @@ export default function PrintJobPage() {
     }
   };
 
-  // Remove related lead from frontend display (for printing purposes)
+  // Get deleted related lead IDs from localStorage
+  const getDeletedRelatedLeads = (): number[] => {
+    if (!lead?.id) return [];
+    const storageKey = `deletedRelatedLeads_${lead.id}`;
+    return JSON.parse(localStorage.getItem(storageKey) || '[]');
+  };
+
+  // Remove related lead from frontend display and persist to localStorage
   const removeRelatedLead = (leadIndex: number) => {
+    if (!lead?.id || !relatedLeads[leadIndex]?.id) return;
+
+    const relatedLeadId = relatedLeads[leadIndex].id;
+    const storageKey = `deletedRelatedLeads_${lead.id}`;
+    const deletedIds = JSON.parse(localStorage.getItem(storageKey) || '[]');
+
+    // Add to deleted IDs if not already there
+    if (!deletedIds.includes(relatedLeadId)) {
+      deletedIds.push(relatedLeadId);
+      localStorage.setItem(storageKey, JSON.stringify(deletedIds));
+    }
+
+    // Remove from frontend state
     setRelatedLeads(prevLeads => prevLeads.filter((_, index) => index !== leadIndex));
   };
 
@@ -1227,7 +1253,7 @@ const getCurrentStageIndex = (): number => {
                           <button
                             onClick={() => removeRelatedLead(index)}
                             className="no-print absolute top-2 right-2 text-xs bg-red-100 text-red-700 px-2 py-1 rounded hover:bg-red-200 transition-colors"
-                            title="ลบออกจากการแสดงผล (สำหรับการพิมพ์)"
+                            title="ลบออกจากการแสดงผล (บันทึกการลบไว้)"
                           >
                             🗑️ ลบ
                           </button>
@@ -1392,7 +1418,7 @@ const getCurrentStageIndex = (): number => {
                         <button
                           onClick={() => removeRelatedLead(index)}
                           className="no-print text-xs bg-red-100 text-red-700 px-2 py-1 rounded hover:bg-red-200 transition-colors"
-                          title="ลบออกจากการแสดงผล (สำหรับการพิมพ์)"
+                          title="ลบออกจากการแสดงผล (บันทึกการลบไว้)"
                         >
                           🗑️ ลบ
                         </button>
