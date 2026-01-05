@@ -1017,6 +1017,9 @@ const getCurrentStageIndex = (): number => {
               <div className="float-right text-right mt-2 mb-2">
                 <p className="text-2xl font-semibold">JOB NO. : {getPropertyValue("2f9b502ecd32baca")}</p>
                 <p className="text-xl ">วันที่เปิดงาน : {formatDate(lead.date_open)}</p>
+                {lead.date_deadline && (
+                  <p className="text-lg text-orange-600">วันที่จะส่งงาน : {formatDate(lead.date_deadline)}</p>
+                )}
               </div>
               <div className="hidden print-price">
                 <span>ราคา {lead.expected_revenue.toFixed(2)} บาท</span>
