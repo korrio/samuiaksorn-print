@@ -1273,6 +1273,12 @@ const getCurrentStageIndex = (): number => {
                               </div>
                             ))}
                           </div>
+                          {/* Show delivery date for table format */}
+                          {relatedLead.date_deadline && (
+                            <div className="mt-2 text-xs text-orange-600 font-medium">
+                              📅 วันที่ส่งงาน: {formatDate(relatedLead.date_deadline)}
+                            </div>
+                          )}
                         </div>
                     ) : (
                       <div>
@@ -1425,6 +1431,12 @@ const getCurrentStageIndex = (): number => {
                         <div className=" text-xs text-gray-400">
                           วันที่เปิดงาน: <br/>
                           {formatDate(relatedLead.create_date)}
+                          {relatedLead.date_deadline && (
+                            <>
+                              <br />
+                              <span className="text-orange-600">วันที่ส่งงาน: {formatDate(relatedLead.date_deadline)}</span>
+                            </>
+                          )}
                         </div>
                       </div>
                     </div>
