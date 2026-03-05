@@ -21,6 +21,8 @@ interface PrintJobData {
   user_id: [number, string]
   date_deadline: string
   lead_properties: LeadProperty[]
+  tag_ids?: number[]
+  tag_names?: string[]
 }
 
 interface PrintJobResponse {
@@ -119,6 +121,14 @@ export default function PrintJobDetails({ data }: PrintJobProps) {
             <span className="text-gray-600">ราคาต่อหน่วย</span>
             <span>{properties["13915b99e3484da1"] || "-"}</span>
           </div>
+          <div className="flex justify-between">
+            <span className="text-gray-600">ชื่อกระดาษ (ชุดใหม่)</span>
+            <span>{properties["1f489f8b812714ab"] || "-"}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-600">ชื่อกระดาษ (ชุดเก่า)</span>
+            <span>{properties["e695494263014454"] || "-"}</span>
+          </div>
         </div>
 
         <div className="space-y-4">
@@ -153,6 +163,10 @@ export default function PrintJobDetails({ data }: PrintJobProps) {
           <div className="flex justify-between">
             <span className="text-gray-600">บิล No.</span>
             <span>{properties["1e1a2c1139e73a55"] || "-"}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-600">Tags</span>
+            <span>{job.tag_names?.join(", ") || "-"}</span>
           </div>
         </div>
       </div>

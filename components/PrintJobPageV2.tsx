@@ -1143,10 +1143,16 @@ const getCurrentStageIndex = (): number => {
                   <td className="py-1 px-2">{getPropertyValue("cfa88ab31faaa9e3")}</td>
                 </tr>
                 <tr>
-                  <td className="py-1 px-2 text-gray-600 font-medium">กระดาษ/วัสดุ</td>
-                  <td className="py-1 px-2">{getPropertyValue("e695494263014454")}</td>
+                  <td className="py-1 px-2 text-gray-600 font-medium">กระดาษ/วัสดุ (ชุดใหม่)</td>
+                  <td className="py-1 px-2">{getPropertyValue("1f489f8b812714ab")}</td>
                   <td className="py-1 px-2 text-gray-600 font-medium">ช่างพิมพ์/ปริ้น</td>
                   <td className="py-1 px-2">{getPropertyValue("cfd03e83e1f2ad7b")}</td>
+                </tr>
+                <tr>
+                  <td className="py-1 px-2 text-gray-600 font-medium">กระดาษ/วัสดุ (ชุดเก่า)</td>
+                  <td className="py-1 px-2">{getPropertyValue("e695494263014454")}</td>
+                  <td className="py-1 px-2 text-gray-600 font-medium">Tags</td>
+                  <td className="py-1 px-2">{lead.tag_names?.join(", ") || "-"}</td>
                 </tr>
                 <tr>
                   {/*<td className="py-1 px-2 text-gray-600 font-medium">ขนาดมาตรฐาน</td>

@@ -25,6 +25,7 @@ export interface Lead {
   company_id: [number, string] | false;
   stage_id: [number, string] | false;
   tag_ids: any[];
+  tag_names?: string[];
   description: string | false;
   date_open: string | false;
   date_closed: string | false;
