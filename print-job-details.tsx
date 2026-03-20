@@ -122,13 +122,13 @@ export default function PrintJobDetails({ data }: PrintJobProps) {
             <span>{properties["13915b99e3484da1"] || "-"}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-600">ชื่อกระดาษ (ชุดใหม่)</span>
+            <span className="text-gray-600">ชื่อกระดาษ</span>
             <span>{properties["1f489f8b812714ab"] || "-"}</span>
           </div>
-          <div className="flex justify-between">
+{/*          <div className="flex justify-between">
             <span className="text-gray-600">ชื่อกระดาษ (ชุดเก่า)</span>
             <span>{properties["e695494263014454"] || "-"}</span>
-          </div>
+          </div>*/}
         </div>
 
         <div className="space-y-4">
