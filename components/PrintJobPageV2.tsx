@@ -1334,7 +1334,7 @@ const getCurrentStageIndex = (): number => {
                           <div>
                             <span className="text-gray-600">กระดาษ/วัสดุ:</span>
                             <span className="ml-1 font-medium">
-                              {getPropertyValueRelated(relatedLead, "e695494263014454")}
+                              {getPropertyValueRelated(relatedLead, "1f489f8b812714ab")}
                             </span>
                           </div>
                           <div>
