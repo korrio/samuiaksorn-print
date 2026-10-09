@@ -713,6 +713,13 @@ const getCurrentStageIndex = (): number => {
     return prop.value || defaultValue;
   };
 
+  // Whether a related job is printed on a digital press (เครื่องพิมพ์ contains "Digital",
+  // which also covers the combined options e.g. "Digital + GTO1", "MO4 + Digital")
+  const isDigitalPrinterRelated = (thelead: any): boolean => {
+    const printer = getPropertyValueRelated(thelead, "05545f6d64cf2f2e", "");
+    return String(printer).toLowerCase().includes("digital");
+  };
+
   const getPropertyValueAdvanced = (name: string, defaultValue: string = "-"): React.JSX.Element => {
     if (!lead) {
       return <span>{defaultValue}</span>;
@@ -1255,6 +1262,10 @@ const getCurrentStageIndex = (): number => {
                   
                   return (
                   <div key={index} className="border border-gray-200 rounded-lg p-3 hover:bg-gray-50 transition-colors relative">
+                    {/* Shown only when this related job is on a digital press */}
+                    {isDigitalPrinterRelated(relatedLead) && (
+                      <div className="font-semibold text-gray-800 mb-2">Digital Layout</div>
+                    )}
                     {relatedLead.description && tableData.length > 0 ? (
                     
                         <div className="">
@@ -1281,6 +1292,18 @@ const getCurrentStageIndex = (): number => {
                                 </div>
                               </div>
                             ))}
+                            {/* จำนวนหน้า/เล่ม from lead properties (not present in the old description table) */}
+                            {getPropertyValueRelated(relatedLead, "eb1bdca381cad707") !== "-" &&
+                              !tableData.some(item => item.label.includes('จำนวนหน้า')) && (
+                              <div className="flex border border-gray-200">
+                                <div className="bg-gray-50 px-2 py-1 font-medium text-gray-700 border-r border-gray-200 min-w-[100px]">
+                                  จำนวนหน้า/เล่ม:
+                                </div>
+                                <div className="px-2 py-1 flex-1">
+                                  {getPropertyValueRelated(relatedLead, "eb1bdca381cad707")}
+                                </div>
+                              </div>
+                            )}
                           </div>
                           {/* Show delivery date for table format */}
                           {relatedLead.date_deadline && (
@@ -1401,6 +1424,12 @@ const getCurrentStageIndex = (): number => {
                             <span className="text-gray-600">จำนวนใบ/ชุด:</span>
                             <span className="ml-1 font-medium">
                               {getPropertyValueRelated(relatedLead, "a1c403ebe63df23d")}
+                            </span>
+                          </div>
+                          <div>
+                            <span className="text-gray-600">จำนวนหน้า/เล่ม:</span>
+                            <span className="ml-1 font-medium">
+                              {getPropertyValueRelated(relatedLead, "eb1bdca381cad707")}
                             </span>
                           </div>
                           <div>
